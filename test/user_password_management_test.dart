@@ -88,6 +88,22 @@ void main() {
       expect(await userDao.verifyOwnerPasscode('1234'), isTrue);
     });
 
+    test('Old database compatibility: old bcrypt hash auto-migrates to plain text seamlessly', () async {
+      final db = await dbHelper.database;
+      // Simulate an old database user row containing an old bcrypt hash
+      const oldBcryptHash = r'$2y$10$e8wV4s6N.g6Yp7q6F4c3eO7Z9L0M1N2O3P4Q5R6S7T8U9V0W1X2Y3';
+      await db.update('users', {'password_hash': oldBcryptHash}, where: 'id = ?', whereArgs: ['usr-admin-001']);
+
+      // Attempt login with default password '123456'
+      final canLogin = await userDao.verifyOfflinePassword('usr-admin-001', '123456');
+      expect(canLogin, isTrue, reason: 'Old database users with bcrypt hashes must still be able to log in with 123456');
+
+      // Verify that the row in SQLite has now been auto-upgraded to plain text '123456'
+      final res = await db.query('users', columns: ['password_hash'], where: 'id = ?', whereArgs: ['usr-admin-001']);
+      expect(res.first['password_hash']?.toString(), equals('123456'),
+          reason: 'Row should now be converted to pure plain text for future instant logins');
+    });
+
     test('getAllUsersWithAccounts retrieves users and their accounts', () async {
       final list = await userDao.getAllUsersWithAccounts();
       expect(list.isNotEmpty, isTrue);
