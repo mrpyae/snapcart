@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:get/get.dart';
 
 class ProductModel {
   final String id;
@@ -73,16 +74,17 @@ class ProductModel {
   bool get isDiscontinued => productStatus == 'DISCONTINUED';
 
   String get statusLabel {
+    final isEn = Get.locale?.languageCode == 'en';
     switch (productStatus) {
       case 'OUT_OF_STOCK':
-        return 'ပစ္စည်းပြတ်';
+        return isEn ? 'Out of Stock' : 'ပစ္စည်းပြတ်';
       case 'PRE_ORDER':
-        return 'Pre-Order';
+        return isEn ? 'Pre-Order' : 'ကြိုတင်မှာယူ';
       case 'DISCONTINUED':
-        return 'ရပ်ဆိုင်း';
+        return isEn ? 'Discontinued' : 'ရပ်ဆိုင်း';
       case 'AVAILABLE':
       default:
-        return 'ရောင်းရန်ရှိ';
+        return isEn ? 'Available' : 'ရောင်းရန်ရှိ';
     }
   }
 

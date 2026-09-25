@@ -1,3 +1,5 @@
+import 'package:get/get.dart';
+
 class PurchaseItemModel {
   final String id;
   final String purchaseId;
@@ -198,15 +200,16 @@ class PurchaseModel {
   bool get isPendingDelivery => status == 'ORDERED' || status == 'PARTIALLY_RECEIVED';
 
   String get statusLabel {
+    final isEn = Get.locale?.languageCode == 'en';
     switch (status) {
       case 'ORDERED':
-        return 'မှာယူထားဆဲ';
+        return isEn ? 'Ordered' : 'မှာယူထားဆဲ';
       case 'PARTIALLY_RECEIVED':
-        return 'တစိတ်တပိုင်းရောက်ရှိ';
+        return isEn ? 'Partially Received' : 'တစ်စိတ်တစ်ပိုင်းရရှိ';
       case 'RECEIVED':
-        return 'ပစ္စည်းအပြည့်အစုံရရှိ';
+        return isEn ? 'Received' : 'လက်ခံရရှိပြီး';
       case 'CANCELLED':
-        return 'ပယ်ဖျက်ပြီး';
+        return isEn ? 'Cancelled' : 'ပယ်ဖျက်';
       default:
         return status;
     }

@@ -458,9 +458,9 @@ class POSView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(color: AppColors.secondary, width: 0.8),
                             ),
-                            child: const Text(
-                              'ဝမ်းဆက်',
-                              style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: AppColors.secondary),
+                            child: Text(
+                              'one_set'.tr,
+                              style: const TextStyle(fontSize: 8.5, fontWeight: FontWeight.bold, color: AppColors.secondary),
                             ),
                           ),
                         ],
@@ -754,7 +754,7 @@ class POSView extends StatelessWidget {
                   Obx(() {
                     if (posController.cart.isEmpty) return const SizedBox.shrink();
                     return Tooltip(
-                      message: 'Clear Cart Items (ရှင်းမည်)',
+                      message: 'clear_cart'.tr,
                       child: InkWell(
                         onTap: () => _showClearCartConfirmDialog(context, posController),
                         borderRadius: BorderRadius.circular(6),
@@ -1233,7 +1233,7 @@ class POSView extends StatelessWidget {
                     controller: searchCtrl,
                     autofocus: true,
                     decoration: InputDecoration(
-                      hintText: 'Search by Name or Phone (အမည်/ဖုန်း)...',
+                      hintText: 'search_name_phone'.tr,
                       prefixIcon: const Icon(Icons.search_rounded, size: 18, color: AppColors.textMuted),
                       suffixIcon: searchCtrl.text.isNotEmpty
                           ? IconButton(
@@ -1405,12 +1405,12 @@ class POSView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
-                    children: const [
-                      Icon(Icons.pause_circle_outline_rounded, color: Colors.amber, size: 22),
-                      SizedBox(width: 8),
+                    children: [
+                      const Icon(Icons.pause_circle_outline_rounded, color: Colors.amber, size: 22),
+                      const SizedBox(width: 8),
                       Text(
-                        'Hold Current Order (ခေတ္တဆိုင်းငံ့မည်)',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                        'hold_order'.tr,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                       ),
                     ],
                   ),
@@ -1608,7 +1608,7 @@ class POSView extends StatelessWidget {
                                   await posController.resumeHeldOrder(order);
                                 },
                                 icon: const Icon(Icons.play_arrow_rounded, size: 16),
-                                label: const Text('Resume (ခေါ်ယူမည်)', style: TextStyle(fontSize: 11)),
+                                label: Text('resume'.tr, style: const TextStyle(fontSize: 11)),
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   backgroundColor: AppColors.primary,
@@ -1870,10 +1870,10 @@ class POSView extends StatelessWidget {
       AlertDialog(
         backgroundColor: AppColors.cardBg,
         title: Row(
-          children: const [
-            Icon(Icons.delete_sweep_rounded, color: AppColors.error, size: 22),
-            SizedBox(width: 8),
-            Text('Clear Cart Items (အကုန်ရှင်းမည်)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          children: [
+            const Icon(Icons.delete_sweep_rounded, color: AppColors.error, size: 22),
+            const SizedBox(width: 8),
+            Text('clear_cart'.tr, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           ],
         ),
         content: const Text(
@@ -2044,8 +2044,8 @@ class POSView extends StatelessWidget {
                     const SizedBox(height: 14),
 
                     // 1. Fulfillment Type Selection (Self-Collected vs Delivery Service)
-                    const Text('Fulfillment & Delivery Method (ပို့ဆောင်ရေး):',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                    Text('fulfillment_delivery'.tr,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -2054,7 +2054,7 @@ class POSView extends StatelessWidget {
                             avatar: Icon(Icons.storefront_rounded,
                                 size: 16,
                                 color: fulfillmentType == 'SELF_COLLECT' ? Colors.white : AppColors.textSecondary),
-                            label: const Text('Self-Collected (ဆိုင်လာယူ)', style: TextStyle(fontSize: 11.5)),
+                            label: Text('self_collected'.tr, style: const TextStyle(fontSize: 11.5)),
                             selected: fulfillmentType == 'SELF_COLLECT',
                             selectedColor: AppColors.primary,
                             onSelected: (_) {
@@ -2074,7 +2074,7 @@ class POSView extends StatelessWidget {
                             avatar: Icon(Icons.local_shipping_rounded,
                                 size: 16,
                                 color: fulfillmentType == 'DELIVERY' ? Colors.white : AppColors.textSecondary),
-                            label: const Text('Delivery Service (ပို့ဆောင်ရေး)', style: TextStyle(fontSize: 11.5)),
+                            label: Text('delivery_service'.tr, style: const TextStyle(fontSize: 11.5)),
                             selected: fulfillmentType == 'DELIVERY',
                             selectedColor: AppColors.primary,
                             onSelected: (_) {
@@ -2184,12 +2184,12 @@ class POSView extends StatelessWidget {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Row(
+                                        Row(
                                           children: [
-                                            Icon(Icons.storefront_rounded, size: 15, color: Colors.tealAccent),
-                                            SizedBox(width: 5),
-                                            Text('In-House Delivery Income (ဆိုင်တွင်းပို့ခဝင်ငွေ)',
-                                                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Colors.tealAccent)),
+                                            const Icon(Icons.storefront_rounded, size: 15, color: Colors.tealAccent),
+                                            const SizedBox(width: 5),
+                                            Text('in_house_delivery_income'.tr,
+                                                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Colors.tealAccent)),
                                           ],
                                         ),
                                         if (selectedDeliveryService!.isCommissionBased)
@@ -2287,7 +2287,7 @@ class POSView extends StatelessWidget {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                'Cash on Delivery (COD / ပစ္စည်းရောက်ငွေချေ)',
+                                                'cash_on_delivery'.tr,
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,
@@ -2326,7 +2326,7 @@ class POSView extends StatelessWidget {
                                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                       onChanged: (_) => setState(() {}),
                                       decoration: InputDecoration(
-                                        labelText: 'COD Amount to Collect by Courier (ကောက်ခံမည့်ငွေ) *',
+                                        labelText: 'cod_amount_collect'.tr,
                                         prefixIcon: const Icon(Icons.attach_money_rounded, size: 18, color: Colors.amber),
                                         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                                         suffixIcon: TextButton(
@@ -2335,7 +2335,7 @@ class POSView extends StatelessWidget {
                                               codAmountCtrl.text = grandTotal.toStringAsFixed(0);
                                             });
                                           },
-                                          child: const Text('Full Total', style: TextStyle(fontSize: 11, color: Colors.amber, fontWeight: FontWeight.bold)),
+                                          child: Text('full_total'.tr, style: const TextStyle(fontSize: 11, color: Colors.amber, fontWeight: FontWeight.bold)),
                                         ),
                                       ),
                                     ),
@@ -2352,13 +2352,13 @@ class POSView extends StatelessWidget {
                     // 2. Settlement Mode Selection (Hidden if COD)
                     if (!isCod) ...[
                       if (isCustomerSelected) ...[
-                        const Text('Payment Settlement Type:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                        Text('payment_settlement_type'.tr, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                         const SizedBox(height: 6),
                         Row(
                           children: [
                             Expanded(
                               child: ChoiceChip(
-                                label: const Center(child: Text('Full Payment', style: TextStyle(fontSize: 11.5))),
+                                label: Center(child: Text('full_payment'.tr, style: const TextStyle(fontSize: 11.5))),
                                 selected: paymentMode == 'full',
                                 onSelected: (_) {
                                   setState(() {
@@ -2372,7 +2372,7 @@ class POSView extends StatelessWidget {
                             const SizedBox(width: 6),
                             Expanded(
                               child: ChoiceChip(
-                                label: const Center(child: Text('Partial Pay', style: TextStyle(fontSize: 11.5))),
+                                label: Center(child: Text('partial_pay'.tr, style: const TextStyle(fontSize: 11.5))),
                                 selected: paymentMode == 'partial',
                                 onSelected: (_) {
                                   setState(() {
@@ -2386,7 +2386,7 @@ class POSView extends StatelessWidget {
                             const SizedBox(width: 6),
                             Expanded(
                               child: ChoiceChip(
-                                label: const Center(child: Text('Full Credit', style: TextStyle(fontSize: 11.5))),
+                                label: Center(child: Text('full_credit'.tr, style: const TextStyle(fontSize: 11.5))),
                                 selected: paymentMode == 'credit',
                                 onSelected: (_) {
                                   setState(() {
@@ -2409,7 +2409,7 @@ class POSView extends StatelessWidget {
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           onChanged: (_) => setState(() {}),
                           decoration: InputDecoration(
-                            labelText: isPartial ? 'Paid Amount (ပေးငွေ) *' : 'Tendered Cash / Paid Amount',
+                            labelText: isPartial ? 'paid_amount_required'.tr : 'tendered_paid_amount'.tr,
                             prefixIcon: const Icon(Icons.attach_money_rounded, size: 18, color: AppColors.primaryLight),
                           ),
                         ),
@@ -2428,7 +2428,7 @@ class POSView extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Unpaid Due (Customer Debt):', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.error)),
+                              Text('unpaid_due'.tr, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.error)),
                               Text(
                                 Formatters.formatCurrency(dueAmount),
                                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.error),
@@ -2448,7 +2448,7 @@ class POSView extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Change Return (ပြန်အမ်းငွေ):', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green)),
+                              Text('change_return'.tr, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green)),
                               Text(
                                 Formatters.formatCurrency(changeAmount),
                                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.green),
@@ -2679,7 +2679,7 @@ class POSView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(color: AppColors.secondary, width: 0.8),
                             ),
-                            child: const Text('ဝမ်းဆက် (One Set)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.secondary)),
+                            child: Text('one_set'.tr, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.secondary)),
                           ),
                       ],
                     ),
@@ -2866,12 +2866,12 @@ class POSView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.history_rounded, size: 14, color: AppColors.primaryLight),
-                    SizedBox(width: 4),
+                  children: [
+                    const Icon(Icons.history_rounded, size: 14, color: AppColors.primaryLight),
+                    const SizedBox(width: 4),
                     Text(
-                      'Check Past Price History (ဈေးနှုန်းမှတ်တမ်း)',
-                      style: TextStyle(fontSize: 11, color: AppColors.primaryLight, fontWeight: FontWeight.bold),
+                      'check_price_history'.tr,
+                      style: const TextStyle(fontSize: 11, color: AppColors.primaryLight, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

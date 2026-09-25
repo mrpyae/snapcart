@@ -71,7 +71,7 @@ class VoucherBuilderController extends GetxController {
       customerName: 'ဒေါ်အေးအေးသင်း',
       customerPhone: '09-450012345',
       userId: 'usr-admin-001',
-      userName: 'ကိုအောင်သူ (Cashier)',
+      userName: 'ကိုအောင်သူ',
       subtotal: 54000.0,
       taxAmount: 2700.0,
       discountAmount: 2000.0,

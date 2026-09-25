@@ -112,7 +112,9 @@ class DeliveryServiceView extends StatelessWidget {
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(
-                    isMobile ? 'In-House (ဆိုင်တွင်း)' : 'In-House(ဆိုင်တွင်းပို့ဆောင်ခ)',
+                    Get.locale?.languageCode == 'my'
+                        ? (isMobile ? 'ဆိုင်တွင်း' : 'ဆိုင်တွင်းပို့ဆောင်ခ')
+                        : (isMobile ? 'In-House' : 'In-House Delivery'),
                     style: TextStyle(
                       fontSize: isMobile ? 11 : 12.5,
                       fontWeight: tab == 1 ? FontWeight.bold : FontWeight.normal,
@@ -239,7 +241,7 @@ class DeliveryServiceView extends StatelessWidget {
                                 underline: const SizedBox(),
                                 style: const TextStyle(fontSize: 12.5, color: AppColors.textPrimary),
                                 items: [
-                                  const DropdownMenuItem(value: '', child: Text('All In-House Riders (အားလုံး)', overflow: TextOverflow.ellipsis)),
+                                  DropdownMenuItem(value: '', child: Text(Get.locale?.languageCode == 'my' ? 'ဆိုင်တွင်းပို့ဆောင်သူများ အားလုံး' : 'All In-House Riders', overflow: TextOverflow.ellipsis)),
                                   ...inHouseRiders.map((r) => DropdownMenuItem(value: r.id, child: Text(r.name, overflow: TextOverflow.ellipsis))),
                                 ],
                                 onChanged: (val) {
@@ -284,7 +286,7 @@ class DeliveryServiceView extends StatelessWidget {
                           underline: const SizedBox(),
                           style: const TextStyle(fontSize: 12.5, color: AppColors.textPrimary),
                           items: [
-                            const DropdownMenuItem(value: '', child: Text('All In-House Riders (အားလုံး)')),
+                            DropdownMenuItem(value: '', child: Text(Get.locale?.languageCode == 'my' ? 'ဆိုင်တွင်းပို့ဆောင်သူများ အားလုံး' : 'All In-House Riders')),
                             ...inHouseRiders.map((r) => DropdownMenuItem(value: r.id, child: Text(r.name))),
                           ],
                           onChanged: (val) {
@@ -581,21 +583,22 @@ class DeliveryServiceView extends StatelessWidget {
     final totalComm = double.tryParse(summary['total_rider_commission']?.toString() ?? '0') ?? 0.0;
     final netIncome = double.tryParse(summary['net_delivery_income']?.toString() ?? '0') ?? 0.0;
 
+    final bool isMm = Get.locale?.languageCode == 'my';
     if (isMobile) {
       return Column(
         children: [
           Row(
             children: [
               _buildMetricItem(
-                label: 'Total Trips (ခေါက်ရေ)',
-                value: '$trips Trips',
+                label: isMm ? 'ခေါက်ရေ' : 'Total Trips',
+                value: isMm ? '$trips ခေါက်' : '$trips Trips',
                 icon: Icons.local_shipping_rounded,
                 color: Colors.cyan,
                 isMobile: isMobile,
               ),
               const SizedBox(width: 8),
               _buildMetricItem(
-                label: 'Delivery Income (ပို့ခ)',
+                label: isMm ? 'ပို့ဆောင်ခ' : 'Delivery Income',
                 value: Formatters.formatCurrency(totalFee),
                 icon: Icons.payments_rounded,
                 color: Colors.tealAccent,
@@ -607,7 +610,7 @@ class DeliveryServiceView extends StatelessWidget {
           Row(
             children: [
               _buildMetricItem(
-                label: 'Rider Comm. (ကော်မရှင်)',
+                label: isMm ? 'ကော်မရှင်' : 'Rider Comm.',
                 value: Formatters.formatCurrency(totalComm),
                 icon: Icons.account_circle_rounded,
                 color: Colors.purpleAccent,
@@ -615,7 +618,7 @@ class DeliveryServiceView extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               _buildMetricItem(
-                label: 'Store Net (အသားတင်)',
+                label: isMm ? 'အသားတင်' : 'Store Net',
                 value: Formatters.formatCurrency(netIncome),
                 icon: Icons.account_balance_wallet_rounded,
                 color: Colors.greenAccent,
@@ -630,28 +633,28 @@ class DeliveryServiceView extends StatelessWidget {
     return Row(
       children: [
         _buildMetricItem(
-          label: 'Total Trips (ခေါက်ရေ)',
-          value: '$trips Trips',
+          label: isMm ? 'စုစုပေါင်း ခေါက်ရေ' : 'Total Trips',
+          value: isMm ? '$trips ခေါက်' : '$trips Trips',
           icon: Icons.local_shipping_rounded,
           color: Colors.cyan,
         ),
         const SizedBox(width: 10),
         _buildMetricItem(
-          label: 'Total Delivery Income (ပို့ခ)',
+          label: isMm ? 'စုစုပေါင်း ပို့ဆောင်ခ' : 'Total Delivery Income',
           value: Formatters.formatCurrency(totalFee),
           icon: Icons.payments_rounded,
           color: Colors.tealAccent,
         ),
         const SizedBox(width: 10),
         _buildMetricItem(
-          label: 'Rider Commission (ကော်မရှင်)',
+          label: isMm ? 'ပို့ဆောင်သူ ကော်မရှင်' : 'Rider Commission',
           value: Formatters.formatCurrency(totalComm),
           icon: Icons.account_circle_rounded,
           color: Colors.purpleAccent,
         ),
         const SizedBox(width: 10),
         _buildMetricItem(
-          label: 'Net Store Delivery Income (အသားတင်)',
+          label: isMm ? 'ဆိုင် အသားတင် ပို့ဆောင်ခ' : 'Net Store Delivery Income',
           value: Formatters.formatCurrency(netIncome),
           icon: Icons.account_balance_wallet_rounded,
           color: Colors.greenAccent,
@@ -833,8 +836,8 @@ class DeliveryServiceView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Total COD(ရရန်ကျန်ငွေ)',
-                      style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary)),
+                  Text(Get.locale?.languageCode == 'my' ? 'စုစုပေါင်း COD ရရန်ကျန်ငွေ' : 'Total COD Receivable',
+                      style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary)),
                   const SizedBox(height: 2),
                   Text(
                     Formatters.formatCurrency(totalReceivable),
@@ -1098,7 +1101,9 @@ class DeliveryServiceView extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  service.isInHouse ? 'In-House (ဆိုင်ပိုင်)' : 'External Courier',
+                  service.isInHouse
+                      ? (Get.locale?.languageCode == 'my' ? 'ဆိုင်ပိုင်' : 'In-House')
+                      : (Get.locale?.languageCode == 'my' ? 'ပြင်ပ ပို့ဆောင်ရေး' : 'External Courier'),
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
@@ -1128,9 +1133,9 @@ class DeliveryServiceView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(color: Colors.blue.shade300, width: 0.8),
                     ),
-                    child: const Text(
-                      'Salary (လစာပေး)',
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.lightBlueAccent),
+                    child: Text(
+                      Get.locale?.languageCode == 'my' ? 'လစာပေး' : 'Salary',
+                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.lightBlueAccent),
                     ),
                   ),
                 if (service.defaultDeliveryFee > 0)
@@ -1275,7 +1280,9 @@ class DeliveryServiceView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            service.isInHouse ? 'Pending Rider COD:' : 'COD Receivable (ရရန်ကျန်ငွေ):',
+                            service.isInHouse
+                                ? (Get.locale?.languageCode == 'my' ? 'ပို့ဆောင်သူထံမှ ရရန်ကျန် COD:' : 'Pending Rider COD:')
+                                : (Get.locale?.languageCode == 'my' ? 'ရရန်ကျန်ငွေ:' : 'COD Receivable:'),
                             style: const TextStyle(fontSize: 10.5, color: AppColors.textSecondary),
                           ),
                           Text(
@@ -1386,8 +1393,8 @@ class DeliveryServiceView extends StatelessWidget {
                     const SizedBox(height: 16),
 
                     // Service Type Selection (External vs In-House)
-                    const Text('Service Type (ဝန်ဆောင်မှုအမျိုးအစား):',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                    Text(Get.locale?.languageCode == 'my' ? 'ဝန်ဆောင်မှု အမျိုးအစား:' : 'Service Type:',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -1411,13 +1418,13 @@ class DeliveryServiceView extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: ChoiceChip(
-                            label: const Row(
+                            label: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.two_wheeler_rounded, size: 15),
-                                SizedBox(width: 4),
+                                const Icon(Icons.two_wheeler_rounded, size: 15),
+                                const SizedBox(width: 4),
                                 Flexible(
-                                  child: Text('In-House Rider (ဆိုင်ပိုင်)', style: TextStyle(fontSize: 11.5), overflow: TextOverflow.ellipsis),
+                                  child: Text(Get.locale?.languageCode == 'my' ? 'ဆိုင်ပိုင် ပို့ဆောင်သူ' : 'In-House Rider', style: const TextStyle(fontSize: 11.5), overflow: TextOverflow.ellipsis),
                                 ),
                               ],
                             ),
@@ -1474,21 +1481,21 @@ class DeliveryServiceView extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
 
-                            const Text('Rider Compensation (Rider အကျိုးခံစားခွင့်):',
-                                style: TextStyle(fontSize: 11.5, color: AppColors.textSecondary)),
+                            Text(Get.locale?.languageCode == 'my' ? 'ပို့ဆောင်သူ အကျိုးခံစားခွင့်:' : 'Rider Compensation:',
+                                style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary)),
                             const SizedBox(height: 6),
                             Wrap(
                               spacing: 8,
                               runSpacing: 8,
                               children: [
                                 ChoiceChip(
-                                  label: const Text('Salary-based (လစာပေး)', style: TextStyle(fontSize: 11)),
+                                  label: Text(Get.locale?.languageCode == 'my' ? 'လစာပေး' : 'Salary-based', style: const TextStyle(fontSize: 11)),
                                   selected: riderType == 'SALARY',
                                   selectedColor: Colors.blue.shade700,
                                   onSelected: (_) => setState(() => riderType = 'SALARY'),
                                 ),
                                 ChoiceChip(
-                                  label: const Text('Commission-based (ကော်မရှင်စား)', style: TextStyle(fontSize: 11)),
+                                  label: Text(Get.locale?.languageCode == 'my' ? 'ကော်မရှင်စား' : 'Commission-based', style: const TextStyle(fontSize: 11)),
                                   selected: riderType == 'COMMISSION',
                                   selectedColor: Colors.deepPurple,
                                   onSelected: (_) => setState(() => riderType = 'COMMISSION'),
@@ -1758,7 +1765,7 @@ class DeliveryServiceView extends StatelessWidget {
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
-                        labelText: 'Remitted Amount (လက်ခံရရှိငွေ) *',
+                        labelText: Get.locale?.languageCode == 'my' ? 'လက်ခံရရှိငွေ *' : 'Remitted Amount *',
                         prefixIcon: const Icon(Icons.attach_money_rounded, size: 18, color: Colors.green),
                         suffixIcon: TextButton(
                           onPressed: () {
@@ -1773,8 +1780,8 @@ class DeliveryServiceView extends StatelessWidget {
                     const SizedBox(height: 14),
 
                     // Payment Channel Selection
-                    const Text('Received via (လက်ခံရရှိသည့်လမ်းကြောင်း):',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                    Text(Get.locale?.languageCode == 'my' ? 'လက်ခံရရှိသည့် နည်းလမ်း:' : 'Received via:',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                     const SizedBox(height: 6),
                     Wrap(
                       spacing: 8,

@@ -625,7 +625,7 @@ class VoucherBuilderView extends StatelessWidget {
               const SizedBox(height: 2),
               _buildLiveTotalRow('Paid Amount:', '${controller.sampleOrder.paidAmount.toStringAsFixed(0)} Ks'),
               if (controller.sampleOrder.changeAmount > 0)
-                _buildLiveTotalRow('Change (ပြန်အမ်း):', '${controller.sampleOrder.changeAmount.toStringAsFixed(0)} Ks'),
+                _buildLiveTotalRow('change_due_preview'.tr, '${controller.sampleOrder.changeAmount.toStringAsFixed(0)} Ks'),
 
               // Barcode / QR placeholder
               if (controller.showBarcode.value) ...[

@@ -43,7 +43,7 @@ void main() {
       expect(keys.containsKey('en_US'), true);
       expect(keys.containsKey('my_MM'), true);
       expect(keys['en_US']!['menu_pos'], 'POS Counter');
-      expect(keys['my_MM']!['menu_pos'], 'POS အရောင်းကောင်တာ');
+      expect(keys['my_MM']!['menu_pos'], 'အရောင်းကောင်တာ');
       expect(keys['my_MM']!['language_settings'], 'ဘာသာစကား ရွေးချယ်မှု');
     });
 

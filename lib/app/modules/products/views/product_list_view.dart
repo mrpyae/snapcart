@@ -424,7 +424,7 @@ class ProductListView extends StatelessWidget {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.assignment_outlined, color: AppColors.secondary, size: 20),
-                      tooltip: 'Current Orders (လက်ရှိ အော်ဒါများ)',
+                      tooltip: 'current_orders'.tr,
                       visualDensity: VisualDensity.compact,
                       padding: const EdgeInsets.all(6),
                       constraints: const BoxConstraints(),
@@ -433,7 +433,7 @@ class ProductListView extends StatelessWidget {
                     const SizedBox(width: 4),
                     IconButton(
                       icon: const Icon(Icons.history_rounded, color: AppColors.textSecondary, size: 20),
-                      tooltip: 'Price History (ဈေးနှုန်းမှတ်တမ်း)',
+                      tooltip: 'price_history'.tr,
                       visualDensity: VisualDensity.compact,
                       padding: const EdgeInsets.all(6),
                       constraints: const BoxConstraints(),
@@ -442,7 +442,7 @@ class ProductListView extends StatelessWidget {
                     const SizedBox(width: 4),
                     IconButton(
                       icon: const Icon(Icons.local_shipping_outlined, color: AppColors.primaryLight, size: 20),
-                      tooltip: 'Suppliers (ကုန်သွင်းသူများ)',
+                      tooltip: 'suppliers'.tr,
                       visualDensity: VisualDensity.compact,
                       padding: const EdgeInsets.all(6),
                       constraints: const BoxConstraints(),
@@ -611,17 +611,17 @@ class ProductListView extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.assignment_outlined, color: AppColors.secondary, size: 20),
-                  tooltip: 'Current Orders (လက်ရှိ အော်ဒါများ)',
+                  tooltip: 'current_orders'.tr,
                   onPressed: () => ProductOrdersDialog.show(context, product: p),
                 ),
                 IconButton(
                   icon: const Icon(Icons.history_rounded, color: AppColors.textSecondary, size: 20),
-                  tooltip: 'Price History (ဈေးနှုန်းမှတ်တမ်း)',
+                  tooltip: 'price_history'.tr,
                   onPressed: () => ItemPriceHistoryDialog.show(context, product: p),
                 ),
                 IconButton(
                   icon: const Icon(Icons.local_shipping_outlined, color: AppColors.primaryLight, size: 20),
-                  tooltip: 'Suppliers (ကုန်သွင်းသူများ)',
+                  tooltip: 'suppliers'.tr,
                   onPressed: () => ProductSuppliersDialog.show(context, product: p),
                 ),
                 IconButton(
@@ -797,9 +797,9 @@ class ProductListView extends StatelessWidget {
                                   value: (selectedCategoryId != null && categoryController.categories.any((c) => c.id == selectedCategoryId))
                                       ? selectedCategoryId
                                       : null,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Category (အထည်အမျိုးအစား)',
-                                    prefixIcon: Icon(Icons.category_rounded, size: 18, color: AppColors.primaryLight),
+                                  decoration: InputDecoration(
+                                    labelText: 'category'.tr,
+                                    prefixIcon: const Icon(Icons.category_rounded, size: 18, color: AppColors.primaryLight),
                                   ),
                                   items: [
                                     const DropdownMenuItem(value: null, child: Text('No Category (None)')),
@@ -858,13 +858,15 @@ class ProductListView extends StatelessWidget {
                               onChanged: (val) => setState(() => isOneSet = val ?? false),
                               activeColor: AppColors.secondary,
                               checkColor: Colors.black,
-                              title: const Text(
-                                'ဝမ်းဆက် (One Set Product)',
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary),
+                              title: Text(
+                                'one_set'.tr,
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary),
                               ),
-                              subtitle: const Text(
-                                'Check if this product is sold as a matching top & bottom set',
-                                style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                              subtitle: Text(
+                                Get.locale?.languageCode == 'my'
+                                    ? 'အင်္ကျီနှင့် လုံချည် တွဲဖက်ရောင်းချသော ဝမ်းဆက်ဖြစ်ပါက အမှန်ခြစ်ပါ'
+                                    : 'Check if this product is sold as a matching top & bottom set',
+                                style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
                               ),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                             ),
@@ -877,19 +879,19 @@ class ProductListView extends StatelessWidget {
                               Expanded(
                                 child: TextField(
                                   controller: fabricCtrl,
-                                  decoration: const InputDecoration(labelText: 'Fabric (ချည်သား/ပိုး)'),
+                                  decoration: InputDecoration(labelText: 'fabric'.tr),
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   value: selectedUnit,
-                                  decoration: const InputDecoration(labelText: 'Unit'),
-                                  items: const [
-                                    DropdownMenuItem(value: 'piece', child: Text('Piece (ထည်)')),
-                                    DropdownMenuItem(value: 'set', child: Text('Set (စုံ/တွဲ)')),
-                                    DropdownMenuItem(value: 'yard', child: Text('Yard (ကိုက်)')),
-                                    DropdownMenuItem(value: 'meter', child: Text('Meter (မီတာ)')),
+                                  decoration: InputDecoration(labelText: 'unit'.tr),
+                                  items: [
+                                    DropdownMenuItem(value: 'piece', child: Text('unit_piece'.tr)),
+                                    DropdownMenuItem(value: 'set', child: Text('unit_set'.tr)),
+                                    DropdownMenuItem(value: 'yard', child: Text('unit_yard'.tr)),
+                                    DropdownMenuItem(value: 'meter', child: Text('unit_meter'.tr)),
                                   ],
                                   onChanged: (val) => setState(() => selectedUnit = val ?? 'piece'),
                                 ),
@@ -911,7 +913,7 @@ class ProductListView extends StatelessWidget {
                               Expanded(
                                 child: TextField(
                                   controller: colorCtrl,
-                                  decoration: const InputDecoration(labelText: 'Color (အနီ, အပြာ...)'),
+                                  decoration: InputDecoration(labelText: Get.locale?.languageCode == 'my' ? 'အရောင်' : 'Color'),
                                 ),
                               ),
                             ],
@@ -954,12 +956,12 @@ class ProductListView extends StatelessWidget {
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   value: selectedStatus,
-                                  decoration: const InputDecoration(labelText: 'Status (အခြေအနေ)'),
-                                  items: const [
-                                    DropdownMenuItem(value: 'AVAILABLE', child: Text('ရောင်းရန်ရှိ (Available)')),
-                                    DropdownMenuItem(value: 'OUT_OF_STOCK', child: Text('ပစ္စည်းပြတ် (Out of Stock)')),
-                                    DropdownMenuItem(value: 'PRE_ORDER', child: Text('ကြိုတင်မှာယူ (Pre-Order)')),
-                                    DropdownMenuItem(value: 'DISCONTINUED', child: Text('ရပ်ဆိုင်း (Discontinued)')),
+                                  decoration: InputDecoration(labelText: Get.locale?.languageCode == 'my' ? 'အခြေအနေ' : 'Status'),
+                                  items: [
+                                    DropdownMenuItem(value: 'AVAILABLE', child: Text('status_available'.tr)),
+                                    DropdownMenuItem(value: 'OUT_OF_STOCK', child: Text('status_out_of_stock'.tr)),
+                                    DropdownMenuItem(value: 'PRE_ORDER', child: Text('status_pre_order'.tr)),
+                                    DropdownMenuItem(value: 'DISCONTINUED', child: Text('status_discontinued'.tr)),
                                   ],
                                   onChanged: (val) => setState(() => selectedStatus = val ?? 'AVAILABLE'),
                                 ),

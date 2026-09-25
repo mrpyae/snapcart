@@ -142,7 +142,7 @@ class _ProductOrdersDialogState extends State<ProductOrdersDialog> {
                 children: [
                   Expanded(
                     child: _buildStockMetric(
-                      '📦 Physical Stock\n(စုစုပေါင်း လက်ကျန်)',
+                      Get.locale?.languageCode == 'my' ? '📦 စုစုပေါင်း လက်ကျန်' : '📦 Physical Stock',
                       '${inStock.toStringAsFixed(0)} ${widget.product.unit}',
                       AppColors.textPrimary,
                     ),
@@ -150,7 +150,7 @@ class _ProductOrdersDialogState extends State<ProductOrdersDialog> {
                   Container(width: 1, height: 36, color: AppColors.border),
                   Expanded(
                     child: _buildStockMetric(
-                      '📝 Committed Orders\n(မှာယူထားသော အော်ဒါ)',
+                      Get.locale?.languageCode == 'my' ? '📝 မှာယူထားသော အော်ဒါ' : '📝 Committed Orders',
                       '${reserved.toStringAsFixed(0)} ${widget.product.unit}',
                       AppColors.secondary,
                     ),
@@ -159,8 +159,8 @@ class _ProductOrdersDialogState extends State<ProductOrdersDialog> {
                   Expanded(
                     child: _buildStockMetric(
                       hasShortage
-                          ? '⚠️ Shortage\n(လိုအပ်နေသော အရေအတွက်)'
-                          : '✨ Free to Sell\n(ရောင်းချနိုင်သော လက်ကျန်)',
+                          ? (Get.locale?.languageCode == 'my' ? '⚠️ လိုအပ်သော အရေအတွက်' : '⚠️ Shortage')
+                          : (Get.locale?.languageCode == 'my' ? '✨ ရောင်းချနိုင်သော လက်ကျန်' : '✨ Free to Sell'),
                       '${available.toStringAsFixed(0)} ${widget.product.unit}',
                       hasShortage ? AppColors.error : AppColors.success,
                     ),
@@ -179,7 +179,7 @@ class _ProductOrdersDialogState extends State<ProductOrdersDialog> {
               Row(
                 children: [
                   ChoiceChip(
-                    label: const Text('Active Orders (လက်ရှိ အော်ဒါများ)', style: TextStyle(fontSize: 12)),
+                    label: Text(Get.locale?.languageCode == 'my' ? 'လက်ရှိ အော်ဒါများ' : 'Active Orders', style: const TextStyle(fontSize: 12)),
                     selected: _activeOnly,
                     selectedColor: AppColors.primary.withOpacity(0.25),
                     onSelected: (val) {
@@ -189,7 +189,7 @@ class _ProductOrdersDialogState extends State<ProductOrdersDialog> {
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
-                    label: const Text('All History (အားလုံး)', style: TextStyle(fontSize: 12)),
+                    label: Text(Get.locale?.languageCode == 'my' ? 'မှတ်တမ်း အားလုံး' : 'All History', style: const TextStyle(fontSize: 12)),
                     selected: !_activeOnly,
                     selectedColor: AppColors.primary.withOpacity(0.25),
                     onSelected: (val) {
@@ -463,36 +463,37 @@ class _ProductOrdersDialogState extends State<ProductOrdersDialog> {
     Color fg;
     String label;
 
+    final bool isMm = Get.locale?.languageCode == 'my';
     switch (status) {
       case 'PENDING':
         bg = Colors.amber.withOpacity(0.15);
         fg = Colors.amber.shade900;
-        label = 'Pending (စောင့်ဆိုင်း)';
+        label = isMm ? 'စောင့်ဆိုင်း' : 'Pending';
         break;
       case 'CONFIRMED':
         bg = Colors.blue.withOpacity(0.15);
         fg = Colors.blue.shade800;
-        label = 'Confirmed (အတည်ပြု)';
+        label = isMm ? 'အတည်ပြု' : 'Confirmed';
         break;
       case 'IN_PROGRESS':
         bg = Colors.purple.withOpacity(0.15);
         fg = Colors.purple.shade800;
-        label = 'In Progress (ချုပ်လုပ်နေ)';
+        label = isMm ? 'ချုပ်လုပ်နေ' : 'In Progress';
         break;
       case 'READY_FOR_PICKUP':
         bg = Colors.teal.withOpacity(0.15);
         fg = Colors.teal.shade800;
-        label = 'Ready (အသင့်ဖြစ်)';
+        label = isMm ? 'အသင့်ဖြစ်' : 'Ready';
         break;
       case 'COMPLETED':
         bg = Colors.green.withOpacity(0.15);
         fg = Colors.green.shade800;
-        label = 'Completed (ပြီးစီး)';
+        label = isMm ? 'ပြီးစီး' : 'Completed';
         break;
       case 'CANCELLED':
         bg = Colors.red.withOpacity(0.15);
         fg = Colors.red.shade800;
-        label = 'Cancelled (ပယ်ဖျက်)';
+        label = isMm ? 'ပယ်ဖျက်' : 'Cancelled';
         break;
       default:
         bg = Colors.grey.withOpacity(0.15);

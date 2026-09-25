@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:image/image.dart' as img;
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
+import 'package:get/get.dart';
 import '../data/models/sale_order_model.dart';
 
 class ReceiptPrinterHelper {
@@ -39,8 +40,9 @@ class ReceiptPrinterHelper {
     return bytes;
   }
 
-  // Thermal Receipt Widget for Myanmar Font rendering
+  // Thermal Receipt Widget for Myanmar / English Font rendering
   static Widget buildReceiptWidget(SaleOrderModel order, {String storeName = 'SnapCart Textile Shop', String storePhone = '09-123456789'}) {
+    final bool isMm = Get.locale?.languageCode == 'my';
     return Container(
       width: 380,
       color: Colors.white,
@@ -50,21 +52,21 @@ class ReceiptPrinterHelper {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(storeName, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
-          Text('ဖုန်း - $storePhone', style: const TextStyle(fontSize: 13, color: Colors.black)),
+          Text(isMm ? 'ဖုန်း - $storePhone' : 'Phone - $storePhone', style: const TextStyle(fontSize: 13, color: Colors.black)),
           const SizedBox(height: 8),
           const Divider(thickness: 1, color: Colors.black),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('ဘောက်ချာ : ${order.voucherNo}', style: const TextStyle(fontSize: 12, color: Colors.black)),
-              Text('ရက်စွဲ : ${order.saleDate.substring(0, 10)}', style: const TextStyle(fontSize: 12, color: Colors.black)),
+              Text('${isMm ? "ဘောက်ချာ" : "Voucher"} : ${order.voucherNo}', style: const TextStyle(fontSize: 12, color: Colors.black)),
+              Text('${isMm ? "ရက်စွဲ" : "Date"} : ${order.saleDate.substring(0, 10)}', style: const TextStyle(fontSize: 12, color: Colors.black)),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('အရောင်းဝန်ထမ်း : ${order.userName}', style: const TextStyle(fontSize: 12, color: Colors.black)),
-              Text('ငွေချေမှု : ${order.paymentMethod.toUpperCase()}', style: const TextStyle(fontSize: 12, color: Colors.black)),
+              Text('${isMm ? "အရောင်းဝန်ထမ်း" : "Staff"} : ${order.userName}', style: const TextStyle(fontSize: 12, color: Colors.black)),
+              Text('${isMm ? "ငွေချေမှု" : "Payment"} : ${order.paymentMethod.toUpperCase()}', style: const TextStyle(fontSize: 12, color: Colors.black)),
             ],
           ),
           const Divider(thickness: 1, color: Colors.black),
@@ -94,14 +96,14 @@ class ReceiptPrinterHelper {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('ပစ္စည်းတန်ဖိုး စုစုပေါင်း :', style: TextStyle(fontSize: 12, color: Colors.black)),
+                Text(isMm ? 'ပစ္စည်းတန်ဖိုး စုစုပေါင်း :' : 'Items Total :', style: const TextStyle(fontSize: 12, color: Colors.black)),
                 Text('${(order.grandTotal - order.deliveryFee).toStringAsFixed(0)} Ks', style: const TextStyle(fontSize: 12, color: Colors.black)),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('ပို့ဆောင်ခ (Delivery Fee) :', style: TextStyle(fontSize: 12, color: Colors.black)),
+                Text(isMm ? 'ပို့ဆောင်ခ :' : 'Delivery Fee :', style: const TextStyle(fontSize: 12, color: Colors.black)),
                 Text('${order.deliveryFee.toStringAsFixed(0)} Ks', style: const TextStyle(fontSize: 12, color: Colors.black)),
               ],
             ),
@@ -109,14 +111,14 @@ class ReceiptPrinterHelper {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('စုစုပေါင်း ကျသင့်ငွေ :', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black)),
+              Text(isMm ? 'စုစုပေါင်း ကျသင့်ငွေ :' : 'Grand Total :', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black)),
               Text('${order.grandTotal.toStringAsFixed(0)} Ks', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black)),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('ပေးငွေ :', style: TextStyle(fontSize: 13, color: Colors.black)),
+              Text(isMm ? 'ပေးငွေ :' : 'Paid Amount :', style: const TextStyle(fontSize: 13, color: Colors.black)),
               Text('${order.paidAmount.toStringAsFixed(0)} Ks', style: const TextStyle(fontSize: 13, color: Colors.black)),
             ],
           ),
@@ -124,7 +126,7 @@ class ReceiptPrinterHelper {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('ကျန်ငွေ (အကြွေး) :', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.red)),
+                Text(isMm ? 'အကြွေးကျန်ငွေ :' : 'Due Amount :', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.red)),
                 Text('${order.dueAmount.toStringAsFixed(0)} Ks', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.red)),
               ],
             ),
@@ -132,7 +134,7 @@ class ReceiptPrinterHelper {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('ပြန်အမ်းငွေ :', style: TextStyle(fontSize: 13, color: Colors.black)),
+                Text(isMm ? 'ပြန်အမ်းငွေ :' : 'Change :', style: const TextStyle(fontSize: 13, color: Colors.black)),
                 Text('${order.changeAmount.toStringAsFixed(0)} Ks', style: const TextStyle(fontSize: 13, color: Colors.black)),
               ],
             ),
@@ -143,7 +145,7 @@ class ReceiptPrinterHelper {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('ပို့ဆောင်ရေး (Delivery) :', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black)),
+                  Text(isMm ? 'ပို့ဆောင်ရေး :' : 'Delivery :', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black)),
                   Text(order.deliveryServiceName!, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black)),
                 ],
               ),
@@ -161,7 +163,7 @@ class ReceiptPrinterHelper {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('လိပ်စာ : ', style: TextStyle(fontSize: 11, color: Colors.black)),
+                    Text(isMm ? 'လိပ်စာ : ' : 'Address : ', style: const TextStyle(fontSize: 11, color: Colors.black)),
                     Expanded(
                       child: Text(order.deliveryAddress!, style: const TextStyle(fontSize: 11, color: Colors.black)),
                     ),
@@ -179,10 +181,10 @@ class ReceiptPrinterHelper {
                 ),
                 child: Column(
                   children: [
-                    const Text('★ ပစ္စည်းရောက်ငွေချေ (C.O.D) ★',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black)),
+                    Text(isMm ? '★ ပစ္စည်းရောက်ငွေချေ (COD) ★' : '★ Cash on Delivery (COD) ★',
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black)),
                     const SizedBox(height: 2),
-                    Text('ကောက်ခံရန်ငွေ : ${order.codAmount.toStringAsFixed(0)} Ks',
+                    Text('${isMm ? "ကောက်ခံရန်ငွေ" : "Collect COD"} : ${order.codAmount.toStringAsFixed(0)} Ks',
                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black)),
                   ],
                 ),

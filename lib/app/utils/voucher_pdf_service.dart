@@ -6,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:rabbit_converter/rabbit_converter.dart';
+import 'package:get/get.dart';
 import '../data/local/db_helper.dart';
 import '../data/models/sale_order_model.dart';
 import '../data/models/voucher_template_model.dart';
@@ -272,11 +273,11 @@ class VoucherPdfService {
           ],
         ),
         pw.SizedBox(height: 2),
-        _buildSlipSummaryRow(zg('Paid Amount:'), zg('${order.paidAmount.toStringAsFixed(0)} Ks'), font: mainFont),
+        _buildSlipSummaryRow(zg(Get.locale?.languageCode == 'my' ? 'ပေးငွေ:' : 'Paid Amount:'), zg('${order.paidAmount.toStringAsFixed(0)} Ks'), font: mainFont),
         if (order.dueAmount > 0)
-          _buildSlipSummaryRow(zg('Due Amount (အကြွေး):'), zg('${order.dueAmount.toStringAsFixed(0)} Ks'), isBold: true, color: PdfColors.red700, font: mainFont),
+          _buildSlipSummaryRow(zg(Get.locale?.languageCode == 'my' ? 'အကြွေး:' : 'Due Amount:'), zg('${order.dueAmount.toStringAsFixed(0)} Ks'), isBold: true, color: PdfColors.red700, font: mainFont),
         if (order.changeAmount > 0)
-          _buildSlipSummaryRow(zg('Change (ပြန်အမ်း):'), zg('${order.changeAmount.toStringAsFixed(0)} Ks'), font: mainFont),
+          _buildSlipSummaryRow(zg(Get.locale?.languageCode == 'my' ? 'ပြန်အမ်း:' : 'Change:'), zg('${order.changeAmount.toStringAsFixed(0)} Ks'), font: mainFont),
 
         // Delivery info
         if (tpl.showDeliveryDetails && (order.deliveryType == 'DELIVERY' || order.isCod)) ...[
@@ -543,11 +544,11 @@ class VoucherPdfService {
                       ],
                     ),
                     pw.SizedBox(height: 4),
-                    _buildInvoiceTotalRow(zg('Paid Amount:'), zg('${order.paidAmount.toStringAsFixed(0)} Ks'), font: mainFont),
+                    _buildInvoiceTotalRow(zg(Get.locale?.languageCode == 'my' ? 'ပေးငွေ:' : 'Paid Amount:'), zg('${order.paidAmount.toStringAsFixed(0)} Ks'), font: mainFont),
                     if (order.dueAmount > 0)
-                      _buildInvoiceTotalRow(zg('Due (အကြွေး):'), zg('${order.dueAmount.toStringAsFixed(0)} Ks'), isBold: true, color: PdfColors.red700, font: mainFont),
+                      _buildInvoiceTotalRow(zg(Get.locale?.languageCode == 'my' ? 'အကြွေး:' : 'Due:'), zg('${order.dueAmount.toStringAsFixed(0)} Ks'), isBold: true, color: PdfColors.red700, font: mainFont),
                     if (order.changeAmount > 0)
-                      _buildInvoiceTotalRow(zg('Change:'), zg('${order.changeAmount.toStringAsFixed(0)} Ks'), font: mainFont),
+                      _buildInvoiceTotalRow(zg(Get.locale?.languageCode == 'my' ? 'ပြန်အမ်း:' : 'Change:'), zg('${order.changeAmount.toStringAsFixed(0)} Ks'), font: mainFont),
                   ],
                 ),
               ),

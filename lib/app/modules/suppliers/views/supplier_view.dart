@@ -50,10 +50,10 @@ class SupplierView extends StatelessWidget {
               TextField(
                 controller: nameCtrl,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Category Name (အမျိုးအစားအမည်) *',
-                  hintText: 'e.g. ပိုးထည်, ချည်ထည်, ရက်ကန်း, Packaging',
-                  prefixIcon: Icon(Icons.category_outlined, size: 18, color: AppColors.primaryLight),
+                decoration: InputDecoration(
+                  labelText: Get.locale?.languageCode == 'my' ? 'အမျိုးအစား အမည် *' : 'Category Name *',
+                  hintText: Get.locale?.languageCode == 'my' ? 'e.g. ပိုးထည်, ချည်ထည်, ရက်ကန်း' : 'e.g. Silk, Cotton, Loom, Packaging',
+                  prefixIcon: const Icon(Icons.category_outlined, size: 18, color: AppColors.primaryLight),
                 ),
               ),
               const SizedBox(height: 12),
@@ -301,14 +301,14 @@ class SupplierView extends StatelessWidget {
                             child: DropdownButtonFormField<String?>(
                               isExpanded: true,
                               value: hasMatching ? selectedCategoryId : null,
-                              decoration: const InputDecoration(
-                                labelText: 'Category (အမျိုးအစား)',
-                                prefixIcon: Icon(Icons.category_outlined, size: 18, color: AppColors.primaryLight),
+                              decoration: InputDecoration(
+                                labelText: Get.locale?.languageCode == 'my' ? 'အမျိုးအစား' : 'Category',
+                                prefixIcon: const Icon(Icons.category_outlined, size: 18, color: AppColors.primaryLight),
                               ),
                               items: [
-                                const DropdownMenuItem<String?>(
+                                DropdownMenuItem<String?>(
                                   value: null,
-                                  child: Text('General / No Category', style: TextStyle(color: AppColors.textMuted)),
+                                  child: Text(Get.locale?.languageCode == 'my' ? 'အထွေထွေ / သတ်မှတ်မထား' : 'General / No Category', style: const TextStyle(color: AppColors.textMuted)),
                                 ),
                                 ...catList.map((c) => DropdownMenuItem<String?>(
                                   value: c.id,
@@ -498,7 +498,7 @@ class SupplierView extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('Payment Date (ငွေပေးချေသည့်ရက်စွဲ) *', style: TextStyle(fontSize: 10, color: AppColors.textMuted)),
+                                  Text(Get.locale?.languageCode == 'my' ? 'ငွေပေးချေသည့် ရက်စွဲ *' : 'Payment Date *', style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
                                   const SizedBox(height: 2),
                                   Text(
                                     DateFormat('yyyy-MM-dd (EEEE)').format(paymentDate),
@@ -528,12 +528,12 @@ class SupplierView extends StatelessWidget {
 
                   DropdownButtonFormField<String>(
                     value: paymentMethod,
-                    decoration: const InputDecoration(labelText: 'Payment Method'),
-                    items: const [
-                      DropdownMenuItem(value: 'cash', child: Text('💵 Cash (ငွေသား)')),
-                      DropdownMenuItem(value: 'kpay', child: Text('📱 KBZPay / Mobile Banking')),
-                      DropdownMenuItem(value: 'wave', child: Text('🟡 WavePay')),
-                      DropdownMenuItem(value: 'bank', child: Text('🏦 Bank Transfer')),
+                    decoration: InputDecoration(labelText: Get.locale?.languageCode == 'my' ? 'ငွေပေးချေမှု နည်းလမ်း' : 'Payment Method'),
+                    items: [
+                      DropdownMenuItem(value: 'cash', child: Text(Get.locale?.languageCode == 'my' ? '💵 ငွေသား' : '💵 Cash')),
+                      const DropdownMenuItem(value: 'kpay', child: Text('📱 KBZPay / Mobile Banking')),
+                      const DropdownMenuItem(value: 'wave', child: Text('🟡 WavePay')),
+                      const DropdownMenuItem(value: 'bank', child: Text('🏦 Bank Transfer')),
                     ],
                     onChanged: (val) => setState(() => paymentMethod = val ?? 'cash'),
                   ),
@@ -616,9 +616,9 @@ class SupplierView extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Edit Payment Record (ငွေပေးမှတ်တမ်းပြင်ဆင်ရန်)',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                      Text(
+                        Get.locale?.languageCode == 'my' ? 'ငွေပေးမှတ်တမ်း ပြင်ဆင်ရန်' : 'Edit Payment Record',
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close_rounded, color: AppColors.textMuted, size: 20),
@@ -633,10 +633,10 @@ class SupplierView extends StatelessWidget {
                   // Transaction Type (Payment vs Advance)
                   DropdownButtonFormField<String>(
                     value: paymentType,
-                    decoration: const InputDecoration(labelText: 'Transaction Type (အမျိုးအစား)'),
-                    items: const [
-                      DropdownMenuItem(value: 'PAYMENT', child: Text('Debt Repayment (အကြွေးဆပ်ခြင်း)')),
-                      DropdownMenuItem(value: 'ADVANCE', child: Text('Advance Deposit (စရံငွေကြိုတင်ပေးသွင်းခြင်း)')),
+                    decoration: InputDecoration(labelText: Get.locale?.languageCode == 'my' ? 'အမျိုးအစား' : 'Transaction Type'),
+                    items: [
+                      DropdownMenuItem(value: 'PAYMENT', child: Text(Get.locale?.languageCode == 'my' ? 'အကြွေးဆပ်ခြင်း' : 'Debt Repayment')),
+                      DropdownMenuItem(value: 'ADVANCE', child: Text(Get.locale?.languageCode == 'my' ? 'စရံငွေကြိုတင်ပေးသွင်းခြင်း' : 'Advance Deposit')),
                     ],
                     onChanged: (val) => setState(() => paymentType = val ?? 'PAYMENT'),
                   ),
@@ -673,7 +673,7 @@ class SupplierView extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('Payment Date (ငွေပေးချေသည့်ရက်စွဲ) *', style: TextStyle(fontSize: 10, color: AppColors.textMuted)),
+                                  Text(Get.locale?.languageCode == 'my' ? 'ငွေပေးချေသည့် ရက်စွဲ *' : 'Payment Date *', style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
                                   const SizedBox(height: 2),
                                   Text(
                                     DateFormat('yyyy-MM-dd (EEEE)').format(paymentDate),
@@ -704,12 +704,12 @@ class SupplierView extends StatelessWidget {
                   // Payment Method
                   DropdownButtonFormField<String>(
                     value: paymentMethod,
-                    decoration: const InputDecoration(labelText: 'Payment Method'),
-                    items: const [
-                      DropdownMenuItem(value: 'cash', child: Text('💵 Cash (ငွေသား)')),
-                      DropdownMenuItem(value: 'kpay', child: Text('📱 KBZPay / Mobile Banking')),
-                      DropdownMenuItem(value: 'wave', child: Text('🟡 WavePay')),
-                      DropdownMenuItem(value: 'bank', child: Text('🏦 Bank Transfer')),
+                    decoration: InputDecoration(labelText: Get.locale?.languageCode == 'my' ? 'ငွေပေးချေမှု နည်းလမ်း' : 'Payment Method'),
+                    items: [
+                      DropdownMenuItem(value: 'cash', child: Text(Get.locale?.languageCode == 'my' ? '💵 ငွေသား' : '💵 Cash')),
+                      const DropdownMenuItem(value: 'kpay', child: Text('📱 KBZPay / Mobile Banking')),
+                      const DropdownMenuItem(value: 'wave', child: Text('🟡 WavePay')),
+                      const DropdownMenuItem(value: 'bank', child: Text('🏦 Bank Transfer')),
                     ],
                     onChanged: (val) => setState(() => paymentMethod = val ?? 'cash'),
                   ),
@@ -830,7 +830,7 @@ class SupplierView extends StatelessWidget {
                     Container(width: 1, height: 28, color: AppColors.border),
                     Column(
                       children: [
-                        const Text('Net Balance (လက်ကျန်)', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                        Text(Get.locale?.languageCode == 'my' ? 'လက်ကျန်' : 'Net Balance', style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                         const SizedBox(height: 2),
                         Text(
                           supplier.hasDebt
@@ -884,7 +884,9 @@ class SupplierView extends StatelessWidget {
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(isSettlement ? 'Debt Repayment (အကြွေးဆပ်)' : 'Advance Deposit (စရံငွေ)',
+                            Text(isSettlement
+                                ? (Get.locale?.languageCode == 'my' ? 'အကြွေးဆပ်ခြင်း' : 'Debt Repayment')
+                                : (Get.locale?.languageCode == 'my' ? 'စရံငွေ ပေးသွင်းခြင်း' : 'Advance Deposit'),
                                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                             Text(
                               Formatters.formatCurrency(p.amount),
@@ -898,7 +900,7 @@ class SupplierView extends StatelessWidget {
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.edit_outlined, size: 18, color: AppColors.secondary),
-                          tooltip: 'Edit Record (ပြင်ဆင်ရန်)',
+                          tooltip: Get.locale?.languageCode == 'my' ? 'ပြင်ဆင်ရန်' : 'Edit Record',
                           onPressed: () {
                             _showEditPaymentDialog(context, controller, p, supplier);
                           },
@@ -951,9 +953,10 @@ class SupplierView extends StatelessWidget {
                       child: OutlinedButton.icon(
                         onPressed: () => _showCategoryManagerDialog(context, controller),
                         icon: const Icon(Icons.category_outlined, size: 18),
-                        label: Text(isMobile ? 'Categories' : 'Categories (အမျိုးအစားများ)',style: TextStyle(
-                          fontSize: isMobile?10:18,color: Colors.white
-                        ),),
+                        label: Text(
+                          Get.locale?.languageCode == 'my' ? 'အမျိုးအစားများ' : 'Categories',
+                          style: TextStyle(fontSize: isMobile ? 10 : 18, color: Colors.white),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -1051,7 +1054,7 @@ class SupplierView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Net AP Position (လက်ကျန်ရှင်းတမ်း)', style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                            Text(Get.locale?.languageCode == 'my' ? 'လက်ကျန်ရှင်းတမ်း' : 'Net AP Position', style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                             const SizedBox(height: 4),
                             Text(
                               netPosition < 0

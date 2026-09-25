@@ -48,7 +48,7 @@ class VoucherTemplateModel {
     this.showDeliveryDetails = true,
     this.showBarcode = true,
     this.showTaxAndDiscount = true,
-    this.thankYouNote = 'ဝယ်ယူအားပေးမှုအတွက် အထူးကျေးဇူးတင်ရှိပါသည်။ (Thank You)',
+    this.thankYouNote = 'ဝယ်ယူအားပေးမှုအတွက် အထူးကျေးဇူးတင်ရှိပါသည်။',
     this.policyNote = 'ပစ္စည်းများ လဲလှယ်လိုပါက (၃) ရက်အတွင်း ဘောက်ချာနှင့်တကွ ယူဆောင်လာပါရန်။',
     this.showSignatureLine = false,
   });
@@ -76,7 +76,7 @@ class VoucherTemplateModel {
       showDeliveryDetails: true,
       showBarcode: true,
       showTaxAndDiscount: true,
-      thankYouNote: 'ဝယ်ယူအားပေးမှုအတွက် အထူးကျေးဇူးတင်ရှိပါသည်။ (Thank You)',
+      thankYouNote: 'ဝယ်ယူအားပေးမှုအတွက် အထူးကျေးဇူးတင်ရှိပါသည်။',
       policyNote: 'ပစ္စည်းများ လဲလှယ်လိုပါက (၃) ရက်အတွင်း ဘောက်ချာနှင့်တကွ ယူဆောင်လာပါရန်။',
       showSignatureLine: false,
     );

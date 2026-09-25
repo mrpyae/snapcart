@@ -80,10 +80,10 @@ class ProductSuppliersDialog extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Manage Suppliers (ကုန်သွင်းသူများ သတ်မှတ်မည်)',
-                            style: TextStyle(
+                            Get.locale?.languageCode == 'my' ? 'ကုန်သွင်းသူများ သတ်မှတ်မည်' : 'Manage Suppliers',
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
@@ -289,16 +289,16 @@ class ProductSuppliersDialog extends StatelessWidget {
               TextField(
                 controller: nameCtrl,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Supplier Name (ကုန်သွင်းသူ အမည်) *',
+                decoration: InputDecoration(
+                  labelText: Get.locale?.languageCode == 'my' ? 'ကုန်သွင်းသူ အမည် *' : 'Supplier Name *',
                   isDense: true,
                 ),
               ),
               const SizedBox(height: 10),
               TextField(
                 controller: companyCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Company / Shop Name (ဆိုင်/ကုမ္ပဏီ အမည်)',
+                decoration: InputDecoration(
+                  labelText: Get.locale?.languageCode == 'my' ? 'ဆိုင် / ကုမ္ပဏီ အမည်' : 'Company / Shop Name',
                   isDense: true,
                 ),
               ),
@@ -306,8 +306,8 @@ class ProductSuppliersDialog extends StatelessWidget {
               TextField(
                 controller: phoneCtrl,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Phone (ဖုန်းနံပါတ်)',
+                decoration: InputDecoration(
+                  labelText: Get.locale?.languageCode == 'my' ? 'ဖုန်းနံပါတ်' : 'Phone',
                   isDense: true,
                 ),
               ),
@@ -435,10 +435,10 @@ class ProductSuppliersDialog extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildPriceChip('Current Cost (လက်ရှိဝယ်စျေး)', Formatters.formatCurrency(product.costPrice)),
-                _buildPriceChip('Retail Price (လက်လီရောင်းစျေး)', Formatters.formatCurrency(product.retailPrice)),
+                _buildPriceChip(Get.locale?.languageCode == 'my' ? 'လက်ရှိ ဝယ်စျေး' : 'Current Cost', Formatters.formatCurrency(product.costPrice)),
+                _buildPriceChip(Get.locale?.languageCode == 'my' ? 'လက်လီ ရောင်းစျေး' : 'Retail Price', Formatters.formatCurrency(product.retailPrice)),
                 if (product.wholesalePrice > 0)
-                  _buildPriceChip('Wholesale (လက်ကား)', Formatters.formatCurrency(product.wholesalePrice)),
+                  _buildPriceChip(Get.locale?.languageCode == 'my' ? 'လက်ကားစျေး' : 'Wholesale Price', Formatters.formatCurrency(product.wholesalePrice)),
               ],
             ),
           ),
@@ -450,7 +450,7 @@ class ProductSuppliersDialog extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Suppliers List (ကုန်သွင်းသူ စာရင်း)',
+                Get.locale?.languageCode == 'my' ? 'ကုန်သွင်းသူ စာရင်း' : 'Suppliers List',
                 style: TextStyle(
                   fontSize: isMobile ? 14 : 15,
                   fontWeight: FontWeight.bold,
@@ -647,7 +647,7 @@ class ProductSuppliersDialog extends StatelessWidget {
                                 Icon(Icons.star_rounded, size: 13, color: Colors.amber.shade800),
                                 const SizedBox(width: 3),
                                 Text(
-                                  'Preferred (အဓိက)',
+                                  Get.locale?.languageCode == 'my' ? 'အဓိက' : 'Preferred',
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,

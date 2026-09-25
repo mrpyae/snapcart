@@ -147,12 +147,12 @@ class _ItemPriceHistoryDialogState extends State<ItemPriceHistoryDialog> {
                             child: DropdownButton<String?>(
                               value: selectedCustomerId,
                               isExpanded: true,
-                              hint: const Text('All Customers (အားလုံး)', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                              hint: Text('all_customers'.tr, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
                               dropdownColor: AppColors.cardBg,
                               items: [
-                                const DropdownMenuItem<String?>(
+                                DropdownMenuItem<String?>(
                                   value: null,
-                                  child: Text('All Customers (အားလုံး)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                                  child: Text('all_customers'.tr, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                                 ),
                                 ...customerList.map((c) => DropdownMenuItem<String?>(
                                       value: c.id,

@@ -48,7 +48,7 @@ class _ReportViewState extends State<ReportView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isMobile ? 'Reports & Sales' : 'Reports & Sales Vouchers (အရောင်းမှတ်တမ်းနှင့် အစီရင်ခံစာ)',
+                        isMobile ? 'reports_sales'.tr : 'reports_sales_vouchers'.tr,
                         style: TextStyle(fontSize: isMobile ? 18 : 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -96,60 +96,54 @@ class _ReportViewState extends State<ReportView> {
   // Top Financial Metric Cards
   Widget _buildMetricsHeader(BuildContext context, ReportController controller, bool isMobile) {
     return Obx(() {
-      String presetLabel = 'Period';
-      String presetSubLabel = 'ကာလပိုင်း';
+      final isMyanmar = Get.locale?.languageCode == 'my';
+      String presetLabel = isMyanmar ? 'ကာလပိုင်း' : 'Period';
 
       switch (controller.selectedDatePreset.value) {
         case 'TODAY':
-          presetLabel = "Today's";
-          presetSubLabel = 'ယနေ့';
+          presetLabel = isMyanmar ? 'ယနေ့' : "Today's";
           break;
         case 'YESTERDAY':
-          presetLabel = "Yesterday's";
-          presetSubLabel = 'မနေ့က';
+          presetLabel = isMyanmar ? 'မနေ့က' : "Yesterday's";
           break;
         case 'THIS_WEEK':
-          presetLabel = "This Week's";
-          presetSubLabel = 'ဒီတစ်ပတ်';
+          presetLabel = isMyanmar ? 'ဒီတစ်ပတ်' : "This Week's";
           break;
         case 'THIS_MONTH':
-          presetLabel = "This Month's";
-          presetSubLabel = 'ဒီလ';
+          presetLabel = isMyanmar ? 'ဒီလ' : "This Month's";
           break;
         case 'ALL':
-          presetLabel = "All-Time";
-          presetSubLabel = 'စုစုပေါင်း';
+          presetLabel = isMyanmar ? 'အားလုံး' : "All-Time";
           break;
         default:
-          presetLabel = "Filtered";
-          presetSubLabel = 'ရွေးချယ်ထားသော';
+          presetLabel = isMyanmar ? 'ရွေးချယ်ထားသော' : "Filtered";
           break;
       }
 
       final cards = [
         _buildMetricCard(
-          title: "$presetLabel Sales Revenue",
-          subTitle: '$presetSubLabel အရောင်းရငွေ',
+          title: isMyanmar ? '$presetLabel အရောင်းရငွေ' : "$presetLabel Sales Revenue",
+          subTitle: isMyanmar ? 'အရောင်းရငွေ စုစုပေါင်း' : 'Total Sales Revenue',
           value: Formatters.formatCurrency(controller.filteredTotalRevenue),
           icon: Icons.monetization_on_outlined,
           color: AppColors.success,
-          footer: '${controller.filteredVoucherCount} Orders Completed',
+          footer: isMyanmar ? '${controller.filteredVoucherCount} စောင် ရောင်းချပြီး' : '${controller.filteredVoucherCount} Orders Completed',
         ),
         _buildMetricCard(
-          title: "$presetLabel Expenses",
-          subTitle: '$presetSubLabel ကုန်ကျစရိတ်',
+          title: isMyanmar ? '$presetLabel ကုန်ကျစရိတ်' : "$presetLabel Expenses",
+          subTitle: isMyanmar ? 'ဆိုင်ကုန်ကျစရိတ် စုစုပေါင်း' : 'Total Store Outflows',
           value: Formatters.formatCurrency(controller.filteredExpenses.value),
           icon: Icons.receipt_long_outlined,
           color: AppColors.error,
-          footer: 'Store Outflows',
+          footer: isMyanmar ? 'အသုံးစရိတ်များ' : 'Store Outflows',
         ),
         _buildMetricCard(
-          title: "Estimated Net Profit",
-          subTitle: 'ခန့်မှန်း အသားတင်အမြတ်',
+          title: isMyanmar ? 'ခန့်မှန်း အသားတင်အမြတ်' : "Estimated Net Profit",
+          subTitle: isMyanmar ? 'ဝင်ငွေ နှုတ် ကုန်ကျစရိတ်' : 'Revenue minus expenses',
           value: Formatters.formatCurrency(controller.filteredProfit),
           icon: Icons.query_stats_rounded,
           color: controller.filteredProfit >= 0 ? AppColors.secondary : AppColors.error,
-          footer: 'Revenue minus expenses',
+          footer: isMyanmar ? 'အမြတ်ငွေ' : 'Net Margin',
         ),
       ];
 
@@ -337,12 +331,12 @@ class _ReportViewState extends State<ReportView> {
             child: Obx(() {
               return Row(
                 children: [
-                  _buildDatePresetChip('Today (ယနေ့)', 'TODAY', controller, context),
-                  _buildDatePresetChip('Yesterday (မနေ့က)', 'YESTERDAY', controller, context),
-                  _buildDatePresetChip('This Week (ဒီအပတ်)', 'THIS_WEEK', controller, context),
-                  _buildDatePresetChip('This Month (ဒီလ)', 'THIS_MONTH', controller, context),
-                  _buildDatePresetChip('All Time (အားလုံး)', 'ALL', controller, context),
-                  _buildDatePresetChip('📅 Custom Range', 'CUSTOM', controller, context),
+                  _buildDatePresetChip('preset_today'.tr, 'TODAY', controller, context),
+                  _buildDatePresetChip('preset_yesterday'.tr, 'YESTERDAY', controller, context),
+                  _buildDatePresetChip('preset_this_week'.tr, 'THIS_WEEK', controller, context),
+                  _buildDatePresetChip('preset_this_month'.tr, 'THIS_MONTH', controller, context),
+                  _buildDatePresetChip('preset_all_time'.tr, 'ALL', controller, context),
+                  _buildDatePresetChip('📅 ${'preset_custom'.tr}', 'CUSTOM', controller, context),
 
                   if (controller.startDate.value != null && controller.endDate.value != null) ...[
                     const SizedBox(width: 8),
@@ -664,7 +658,7 @@ class _ReportViewState extends State<ReportView> {
                       child: Text(
                         voucher.customerName != null && voucher.customerName!.isNotEmpty
                             ? '${voucher.customerName} ${voucher.customerPhone != null ? "(${voucher.customerPhone})" : ""}'
-                            : 'ဆိုင်လာဝယ်သူ',
+                            : 'walk_in_customer'.tr,
                         style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -812,9 +806,9 @@ class _ReportViewState extends State<ReportView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Expanded(
-                    child: Text('Sale Voucher (အရောင်းဘောက်ချာ)',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  Expanded(
+                    child: Text('sale_voucher'.tr,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textMuted),
@@ -916,7 +910,7 @@ class _ReportViewState extends State<ReportView> {
               if (voucher.dueAmount > 0) ...[
                 const SizedBox(height: 4),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  const Text('Due (အကြွေးကျန်):', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
+                  Text('due_label'.tr, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
                   Text(Formatters.formatCurrency(voucher.dueAmount), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.error)),
                 ]),
               ],

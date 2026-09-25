@@ -317,7 +317,7 @@ class DBHelper {
         await db.insert('delivery_services', {
           'id': 'del-svc-003',
           'business_id': 'default_biz',
-          'name': 'In-House Rider (ဆိုင်ပိုင်ပို့ဆောင်ရေး)',
+          'name': 'In-House Rider',
           'service_type': 'IN_HOUSE',
           'rider_type': 'COMMISSION',
           'commission_type': 'PERCENT',

@@ -463,7 +463,7 @@ class SettingsView extends StatelessWidget {
                       child: OutlinedButton.icon(
                         onPressed: canReSync ? () => appController.triggerAutoSync(forceFull: true) : null,
                         icon: const Icon(Icons.cloud_download_outlined, size: 18),
-                        label: const Text('Force Full Re-Sync (ဆာဗာမှ ပစ္စည်းအားလုံး ပြန်ယူရန်)'),
+                        label: Text('force_full_resync'.tr),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           side: const BorderSide(color: AppColors.border),

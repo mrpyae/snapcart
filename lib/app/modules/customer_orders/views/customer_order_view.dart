@@ -14,6 +14,8 @@ import '../controllers/customer_order_controller.dart';
 class CustomerOrderView extends StatelessWidget {
   const CustomerOrderView({Key? key}) : super(key: key);
 
+  bool get isMyanmar => Get.locale?.languageCode == 'my';
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.isRegistered<CustomerOrderController>()
@@ -90,32 +92,32 @@ class CustomerOrderView extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             children: [
               _buildMetricCard(
-                title: "Today's Appointments",
-                subTitle: isNarrow ? 'ယနေ့ရက်ချိန်း' : 'ယနေ့ရက်ချိန်းများ',
+                title: isMyanmar ? "ယနေ့ရက်ချိန်းများ" : "Today's Appointments",
+                subTitle: isMyanmar ? 'ယနေ့ရက်ချိန်း' : 'Scheduled today',
                 value: '${controller.todayAppointmentsCount}',
                 icon: Icons.event_available_rounded,
                 color: Colors.blueAccent,
                 isMobile: isNarrow,
               ),
               _buildMetricCard(
-                title: 'In Progress (ရက်လုပ်ဆဲ)',
-                subTitle: isNarrow ? 'ရက်လုပ်ဆဲ' : 'Loom Weaving',
+                title: isMyanmar ? 'ရက်လုပ်ဆဲ' : 'In Progress',
+                subTitle: isMyanmar ? 'ရက်လုပ်ဆဲအော်ဒါများ' : 'Loom Weaving',
                 value: '${controller.inProgressCount}',
                 icon: Icons.precision_manufacturing_rounded,
                 color: Colors.amber.shade700,
                 isMobile: isNarrow,
               ),
               _buildMetricCard(
-                title: 'Ready for Pickup',
-                subTitle: 'လာယူရန်အသင့်',
+                title: isMyanmar ? 'လာယူရန်အသင့်' : 'Ready for Pickup',
+                subTitle: isMyanmar ? 'အသင့်ဖြစ်ပစ္စည်းများ' : 'Ready for customer',
                 value: '${controller.readyForPickupCount}',
                 icon: Icons.inventory_rounded,
                 color: Colors.teal,
                 isMobile: isNarrow,
               ),
               _buildMetricCard(
-                title: 'Advance Collected',
-                subTitle: 'စရံငွေစုစုပေါင်း',
+                title: isMyanmar ? 'စရံငွေစုစုပေါင်း' : 'Advance Collected',
+                subTitle: isMyanmar ? 'လက်ခံရရှိစရံငွေ' : 'Total Deposits',
                 value: Formatters.formatCurrency(controller.totalAdvanceDeposits),
                 icon: Icons.account_balance_wallet_rounded,
                 color: Colors.green,
@@ -224,7 +226,7 @@ class CustomerOrderView extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () => _showOrderFormDialog(context, controller),
                     icon: const Icon(Icons.add_rounded, size: 18),
-                    label: const Text('+ New Order (အမှာစာသစ်)', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold)),
+                    label: Text('new_order'.tr, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -260,7 +262,7 @@ class CustomerOrderView extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () => _showOrderFormDialog(context, controller),
                     icon: const Icon(Icons.add_rounded, size: 18),
-                    label: const Text('+ New Order (အမှာစာသစ်)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    label: Text('new_order'.tr, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -283,11 +285,11 @@ class CustomerOrderView extends StatelessWidget {
                       controller.selectedDateFilter.value = 'ALL';
                       controller.loadOrders();
                     }),
-                    _buildFilterChip("Today (ယနေ့)", controller.selectedDateFilter.value == 'TODAY', () {
+                    _buildFilterChip('preset_today'.tr, controller.selectedDateFilter.value == 'TODAY', () {
                       controller.selectedDateFilter.value = 'TODAY';
                       controller.loadOrders();
                     }, badgeColor: Colors.blue),
-                    _buildFilterChip("Tomorrow (မနက်ဖြန်)", controller.selectedDateFilter.value == 'TOMORROW', () {
+                    _buildFilterChip('tomorrow'.tr, controller.selectedDateFilter.value == 'TOMORROW', () {
                       controller.selectedDateFilter.value = 'TOMORROW';
                       controller.loadOrders();
                     }),
@@ -304,23 +306,23 @@ class CustomerOrderView extends StatelessWidget {
                       controller.selectedStatusFilter.value = 'ALL';
                       controller.loadOrders();
                     }),
-                    _buildFilterChip('PENDING (စောင့်ဆိုင်းဆဲ)', controller.selectedStatusFilter.value == 'PENDING', () {
+                    _buildFilterChip('status_pending'.tr, controller.selectedStatusFilter.value == 'PENDING', () {
                       controller.selectedStatusFilter.value = 'PENDING';
                       controller.loadOrders();
                     }),
-                    _buildFilterChip('CONFIRMED (အတည်ပြု)', controller.selectedStatusFilter.value == 'CONFIRMED', () {
+                    _buildFilterChip('status_confirmed'.tr, controller.selectedStatusFilter.value == 'CONFIRMED', () {
                       controller.selectedStatusFilter.value = 'CONFIRMED';
                       controller.loadOrders();
                     }),
-                    _buildFilterChip('IN_PROGRESS (ရက်လုပ်ဆဲ)', controller.selectedStatusFilter.value == 'IN_PROGRESS', () {
+                    _buildFilterChip('status_in_progress'.tr, controller.selectedStatusFilter.value == 'IN_PROGRESS', () {
                       controller.selectedStatusFilter.value = 'IN_PROGRESS';
                       controller.loadOrders();
                     }),
-                    _buildFilterChip('READY (လာယူရန်အသင့်)', controller.selectedStatusFilter.value == 'READY_FOR_PICKUP', () {
+                    _buildFilterChip('status_ready'.tr, controller.selectedStatusFilter.value == 'READY_FOR_PICKUP', () {
                       controller.selectedStatusFilter.value = 'READY_FOR_PICKUP';
                       controller.loadOrders();
                     }),
-                    _buildFilterChip('COMPLETED (အပြီးသတ်)', controller.selectedStatusFilter.value == 'COMPLETED', () {
+                    _buildFilterChip('status_completed'.tr, controller.selectedStatusFilter.value == 'COMPLETED', () {
                       controller.selectedStatusFilter.value = 'COMPLETED';
                       controller.loadOrders();
                     }),
@@ -338,7 +340,7 @@ class CustomerOrderView extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  const Text('Supplier / Weaver (ရက္ကန်း/ဆိုင်):', style: TextStyle(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+                  Text('supplier_weaver'.tr, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
                   const SizedBox(width: 6),
                   _buildFilterChip('All Suppliers', controller.selectedSupplierFilter.value == 'ALL', () {
                     controller.selectedSupplierFilter.value = 'ALL';
@@ -481,9 +483,9 @@ class CustomerOrderView extends StatelessWidget {
                 },
                 itemBuilder: (ctx) => [
                   if (order.dueAmount > 0)
-                    const PopupMenuItem(value: 'payment', child: Text('💳 ငွေလက်ခံမည် (Collect Payment)')),
-                  const PopupMenuItem(value: 'reschedule', child: Text('ရက်ချိန်းပြောင်းမည် (Reschedule)')),
-                  const PopupMenuItem(value: 'delete', child: Text('ဖျက်မည် (Delete)', style: TextStyle(color: Colors.red))),
+                    PopupMenuItem(value: 'payment', child: Text('💳 ${'collect_payment'.tr}')),
+                  PopupMenuItem(value: 'reschedule', child: Text('reschedule'.tr)),
+                  PopupMenuItem(value: 'delete', child: Text('btn_delete'.tr, style: const TextStyle(color: Colors.red))),
                 ],
               ),
             ],
@@ -789,7 +791,7 @@ class CustomerOrderView extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: () => controller.updateStatus(order.id, 'CONFIRMED'),
             icon: const Icon(Icons.check_circle_outline_rounded, size: 15),
-            label: const Text('Confirm (အတည်ပြုမည်)', style: TextStyle(fontSize: 11)),
+            label: Text('btn_confirm'.tr, style: const TextStyle(fontSize: 11)),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
           ),
         );
@@ -799,7 +801,7 @@ class CustomerOrderView extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: () => controller.updateStatus(order.id, 'IN_PROGRESS'),
             icon: const Icon(Icons.play_arrow_rounded, size: 15),
-            label: const Text('Start Weaving (ရက်လုပ်မည်)', style: TextStyle(fontSize: 11)),
+            label: Text('start_weaving'.tr, style: const TextStyle(fontSize: 11)),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade800, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
           ),
         );
@@ -809,7 +811,7 @@ class CustomerOrderView extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: () => controller.updateStatus(order.id, 'READY_FOR_PICKUP'),
             icon: const Icon(Icons.inventory_rounded, size: 15),
-            label: const Text('Ready for Pickup (အသင့်ဖြစ်)', style: TextStyle(fontSize: 11)),
+            label: Text('ready_for_pickup'.tr, style: const TextStyle(fontSize: 11)),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.teal, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
           ),
         );
@@ -826,7 +828,7 @@ class CustomerOrderView extends StatelessWidget {
             },
             icon: const Icon(Icons.done_all_rounded, size: 15),
             label: Text(
-              order.dueAmount > 0 ? 'Complete & Settle (လွှဲပြောင်းငွေရှင်း)' : 'Complete & Handover (လွှဲပြောင်းမည်)',
+              order.dueAmount > 0 ? 'complete_settle'.tr : 'complete_handover'.tr,
               style: const TextStyle(fontSize: 11),
             ),
             style: ElevatedButton.styleFrom(
@@ -855,7 +857,7 @@ class CustomerOrderView extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => _showPaymentSettlementDialog(context, order, controller),
                       icon: const Icon(Icons.payments_outlined, size: 13),
-                      label: const Text('Pay Due (ငွေရှင်းမည်)', style: TextStyle(fontSize: 11)),
+                      label: Text('pay_due'.tr, style: const TextStyle(fontSize: 11)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -885,7 +887,7 @@ class CustomerOrderView extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () => _showPaymentSettlementDialog(context, order, controller),
                   icon: const Icon(Icons.payments_outlined, size: 13),
-                  label: const Text('Pay Due (ငွေရှင်းမည်)', style: TextStyle(fontSize: 10.5)),
+                  label: Text('pay_due'.tr, style: const TextStyle(fontSize: 10.5)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -1106,7 +1108,7 @@ class CustomerOrderView extends StatelessWidget {
                         DropdownButtonFormField<String>(
                           value: selectedSource,
                           isExpanded: true,
-                          decoration: const InputDecoration(labelText: 'Order Source (လမ်းကြောင်း)', isDense: true),
+                          decoration: InputDecoration(labelText: 'order_source'.tr, isDense: true),
                           items: const [
                             DropdownMenuItem(value: 'MESSENGER', child: Text('🔵 Messenger')),
                             DropdownMenuItem(value: 'VIBER', child: Text('🟣 Viber')),
@@ -1135,7 +1137,7 @@ class CustomerOrderView extends StatelessWidget {
                               child: DropdownButtonFormField<String>(
                                 value: selectedSource,
                                 isExpanded: true,
-                                decoration: const InputDecoration(labelText: 'Order Source (လမ်းကြောင်း)'),
+                                decoration: InputDecoration(labelText: 'order_source'.tr),
                                 items: const [
                                   DropdownMenuItem(value: 'MESSENGER', child: Text('🔵 Messenger')),
                                   DropdownMenuItem(value: 'VIBER', child: Text('🟣 Viber')),
@@ -1171,9 +1173,9 @@ class CustomerOrderView extends StatelessWidget {
                         return DropdownButtonFormField<String?>(
                           value: isValid ? currentId : null,
                           isExpanded: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Assign Primary Supplier / Weaver (ရက္ကန်း/ကုန်သွင်းသူ)',
-                            prefixIcon: Icon(Icons.precision_manufacturing_rounded, size: 18, color: Colors.teal),
+                          decoration: InputDecoration(
+                            labelText: 'assign_supplier'.tr,
+                            prefixIcon: const Icon(Icons.precision_manufacturing_rounded, size: 18, color: Colors.teal),
                           ),
                           items: [
                             const DropdownMenuItem<String?>(value: null, child: Text('No Supplier Assigned (General)')),
@@ -1205,19 +1207,19 @@ class CustomerOrderView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Appointment Scheduling (ရက်ချိန်းသတ်မှတ်ခြင်း)',
-                                style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.blue)),
+                            Text('appointment_scheduling'.tr,
+                                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.blue)),
                             const SizedBox(height: 10),
                             if (isMobile) ...[
                               DropdownButtonFormField<String>(
                                 value: selectedAppointmentType,
                                 isExpanded: true,
                                 decoration: const InputDecoration(labelText: 'Appointment Type', isDense: true),
-                                items: const [
-                                  DropdownMenuItem(value: 'LOOM_WEAVING', child: Text('🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း', overflow: TextOverflow.ellipsis)),
-                                  DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text('📦 အထည်လာပို့ခြင်း', overflow: TextOverflow.ellipsis)),
-                                  DropdownMenuItem(value: 'PACKING', child: Text('🏷️ ပစ္စည်းထုတ်ပိုးခြင်း', overflow: TextOverflow.ellipsis)),
-                                  DropdownMenuItem(value: 'DELIVERY', child: Text('🚚 ပို့ဆောင်ခြင်း', overflow: TextOverflow.ellipsis)),
+                                items: [
+                                  DropdownMenuItem(value: 'LOOM_WEAVING', child: Text(isMyanmar ? '🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း' : '🧵 Loom Weaving', overflow: TextOverflow.ellipsis)),
+                                  DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text(isMyanmar ? '📦 အထည်လာပို့ခြင်း' : '📦 Fabric In Delivery', overflow: TextOverflow.ellipsis)),
+                                  DropdownMenuItem(value: 'PACKING', child: Text(isMyanmar ? '🏷️ ပစ္စည်းထုတ်ပိုးခြင်း' : '🏷️ Packing', overflow: TextOverflow.ellipsis)),
+                                  DropdownMenuItem(value: 'DELIVERY', child: Text(isMyanmar ? '🚚 ပို့ဆောင်ခြင်း' : '🚚 Delivery', overflow: TextOverflow.ellipsis)),
                                 ],
                                 onChanged: (val) => setState(() => selectedAppointmentType = val ?? 'LOOM_WEAVING'),
                               ),
@@ -1271,11 +1273,11 @@ class CustomerOrderView extends StatelessWidget {
                                       value: selectedAppointmentType,
                                       isExpanded: true,
                                       decoration: const InputDecoration(labelText: 'Appointment Type'),
-                                      items: const [
-                                        DropdownMenuItem(value: 'LOOM_WEAVING', child: Text('🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း', overflow: TextOverflow.ellipsis)),
-                                        DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text('📦 အထည်လာပို့ခြင်း', overflow: TextOverflow.ellipsis)),
-                                        DropdownMenuItem(value: 'PACKING', child: Text('🏷️ ပစ္စည်းထုတ်ပိုးခြင်း', overflow: TextOverflow.ellipsis)),
-                                        DropdownMenuItem(value: 'DELIVERY', child: Text('🚚 ပို့ဆောင်ခြင်း', overflow: TextOverflow.ellipsis)),
+                                      items: [
+                                        DropdownMenuItem(value: 'LOOM_WEAVING', child: Text(isMyanmar ? '🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း' : '🧵 Loom Weaving', overflow: TextOverflow.ellipsis)),
+                                        DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text(isMyanmar ? '📦 အထည်လာပို့ခြင်း' : '📦 Fabric In Delivery', overflow: TextOverflow.ellipsis)),
+                                        DropdownMenuItem(value: 'PACKING', child: Text(isMyanmar ? '🏷️ ပစ္စည်းထုတ်ပိုးခြင်း' : '🏷️ Packing', overflow: TextOverflow.ellipsis)),
+                                        DropdownMenuItem(value: 'DELIVERY', child: Text(isMyanmar ? '🚚 ပို့ဆောင်ခြင်း' : '🚚 Delivery', overflow: TextOverflow.ellipsis)),
                                       ],
                                       onChanged: (val) => setState(() => selectedAppointmentType = val ?? 'LOOM_WEAVING'),
                                     ),
@@ -1336,8 +1338,8 @@ class CustomerOrderView extends StatelessWidget {
                       if (isMobile) ...[
                         Row(
                           children: [
-                            const Text('မှာယူသည့် အထည်များ',
-                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                            Text('ordered_fabrics'.tr,
+                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                             const SizedBox(width: 6),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -1382,7 +1384,7 @@ class CustomerOrderView extends StatelessWidget {
                                 });
                               },
                               icon: const Icon(Icons.playlist_add_rounded, size: 16, color: AppColors.secondary),
-                              label: const Text('+ပစ္စည်းမှရွေးမည်', style: TextStyle(fontSize: 11, color: AppColors.secondary, fontWeight: FontWeight.bold)),
+                              label: Text('select_from_products'.tr, style: const TextStyle(fontSize: 11, color: AppColors.secondary, fontWeight: FontWeight.bold)),
                             ),
                             TextButton.icon(
                               onPressed: () {
@@ -1411,8 +1413,8 @@ class CustomerOrderView extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                const Text('မှာယူသည့် အထည်များ',
-                                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                                Text('ordered_fabrics'.tr,
+                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                                 const SizedBox(width: 6),
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -1454,7 +1456,7 @@ class CustomerOrderView extends StatelessWidget {
                                     });
                                   },
                                   icon: const Icon(Icons.playlist_add_rounded, size: 16, color: AppColors.secondary),
-                                  label: const Text('+ပစ္စည်းများမှရွေးမည်', style: TextStyle(fontSize: 11, color: AppColors.secondary, fontWeight: FontWeight.bold)),
+                                  label: Text('select_from_products'.tr, style: const TextStyle(fontSize: 11, color: AppColors.secondary, fontWeight: FontWeight.bold)),
                                 ),
                                 const SizedBox(width: 4),
                                 TextButton.icon(
@@ -1474,7 +1476,7 @@ class CustomerOrderView extends StatelessWidget {
                                     });
                                   },
                                   icon: const Icon(Icons.add_circle_outline_rounded, size: 14),
-                                  label: const Text('+ Custom Item (အသစ်)', style: TextStyle(fontSize: 11)),
+                                  label: Text('custom_item'.tr, style: const TextStyle(fontSize: 11)),
                                 ),
                               ],
                             ),
@@ -1562,7 +1564,7 @@ class CustomerOrderView extends StatelessWidget {
                               const SizedBox(height: 8),
                               TextField(
                                 controller: item['fabricType'],
-                                decoration: const InputDecoration(labelText: 'Fabric / Color (အရောင်/အထည်အမျိုးအစား)', isDense: true),
+                                decoration: InputDecoration(labelText: 'fabric_color'.tr, isDense: true),
                               ),
                               const SizedBox(height: 8),
                               Row(
@@ -1583,11 +1585,11 @@ class CustomerOrderView extends StatelessWidget {
                                       value: item['unit'] as String,
                                       isExpanded: true,
                                       decoration: const InputDecoration(labelText: 'Unit', isDense: true),
-                                      items: const [
-                                        DropdownMenuItem(value: 'piece', child: Text('Piece (ထည်)')),
-                                        DropdownMenuItem(value: 'yard', child: Text('Yard (ကိုက်)')),
-                                        DropdownMenuItem(value: 'meter', child: Text('Meter (မီတာ)')),
-                                        DropdownMenuItem(value: 'set', child: Text('Set (စုံ)')),
+                                      items: [
+                                        DropdownMenuItem(value: 'piece', child: Text('unit_piece'.tr)),
+                                        DropdownMenuItem(value: 'yard', child: Text('unit_yard'.tr)),
+                                        DropdownMenuItem(value: 'meter', child: Text('unit_meter'.tr)),
+                                        DropdownMenuItem(value: 'set', child: Text('unit_set'.tr)),
                                       ],
                                       onChanged: (val) => setState(() => item['unit'] = val ?? 'piece'),
                                     ),
@@ -1685,9 +1687,9 @@ class CustomerOrderView extends StatelessWidget {
                               controller: advanceCtrl,
                               keyboardType: TextInputType.number,
                               onChanged: (_) => setState(() {}),
-                              decoration: const InputDecoration(
-                                labelText: 'Advance Deposit Paid (စရံငွေ)',
-                                prefixIcon: Icon(Icons.payments_outlined, size: 18, color: Colors.green),
+                              decoration: InputDecoration(
+                                labelText: 'advance_deposit_paid'.tr,
+                                prefixIcon: const Icon(Icons.payments_outlined, size: 18, color: Colors.green),
                                 isDense: true,
                               ),
                             ),
@@ -1695,8 +1697,8 @@ class CustomerOrderView extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('Remaining Due (ကျန်ငွေ):',
-                                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
+                                Text('remaining_due'.tr,
+                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
                                 Text(
                                   Formatters.formatCurrency(due),
                                   style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.error),
@@ -1842,7 +1844,7 @@ class CustomerOrderView extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          screenWidth < 400 ? 'Select Product' : 'Select Product (ကုန်ပစ္စည်းရွေးချယ်ရန်)',
+                          'select_products'.tr,
                           style: TextStyle(
                             fontSize: screenWidth < 400 ? 13.5 : 15,
                             fontWeight: FontWeight.bold,
@@ -2172,6 +2174,7 @@ class CustomerOrderView extends StatelessWidget {
         child: StatefulBuilder(
           builder: (context, setState) {
             final screenWidth = MediaQuery.of(context).size.width;
+            final isMyanmar = Get.locale?.languageCode == 'my';
             return Container(
               constraints: const BoxConstraints(maxWidth: 420),
               width: screenWidth < 460 ? screenWidth * 0.94 : 420,
@@ -2186,7 +2189,7 @@ class CustomerOrderView extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          screenWidth < 400 ? 'ရက်ချိန်းပြောင်းမည်' : 'ရက်ချိန်းပြောင်းမည် (Reschedule)',
+                          isMyanmar ? 'ရက်ချိန်းပြောင်းမည်' : 'Reschedule Delivery Date',
                           style: TextStyle(
                             fontSize: screenWidth < 400 ? 13.5 : 15,
                             fontWeight: FontWeight.bold,
@@ -2211,11 +2214,11 @@ class CustomerOrderView extends StatelessWidget {
                   DropdownButtonFormField<String>(
                     value: selectedType,
                     decoration: const InputDecoration(labelText: 'Appointment Type'),
-                    items: const [
-                      DropdownMenuItem(value: 'LOOM_WEAVING', child: Text('🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း')),
-                      DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text('📦 အထည်လာပို့ခြင်း')),
-                      DropdownMenuItem(value: 'PACKING', child: Text('🏷️ ပစ္စည်းထုတ်ပိုးခြင်း')),
-                      DropdownMenuItem(value: 'DELIVERY', child: Text('🚚 ပို့ဆောင်ခြင်း')),
+                    items: [
+                      DropdownMenuItem(value: 'LOOM_WEAVING', child: Text(Get.locale?.languageCode == 'my' ? '🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း' : '🧵 Loom Weaving')),
+                      DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text(Get.locale?.languageCode == 'my' ? '📦 အထည်လာပို့ခြင်း' : '📦 Fabric In Delivery')),
+                      DropdownMenuItem(value: 'PACKING', child: Text(Get.locale?.languageCode == 'my' ? '🏷️ ပစ္စည်းထုတ်ပိုးခြင်း' : '🏷️ Packing')),
+                      DropdownMenuItem(value: 'DELIVERY', child: Text(Get.locale?.languageCode == 'my' ? '🚚 ပို့ဆောင်ခြင်း' : '🚚 Delivery')),
                     ],
                     onChanged: (val) => setState(() => selectedType = val ?? 'LOOM_WEAVING'),
                   ),
@@ -2425,7 +2428,7 @@ class CustomerOrderView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Advance Paid (ပေးပြီးစရံ):', style: TextStyle(fontSize: 12, color: Colors.green)),
+                              Text('${'advance_deposit_paid'.tr}:', style: const TextStyle(fontSize: 12, color: Colors.green)),
                               Text(Formatters.formatCurrency(order.advanceAmount), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.green)),
                             ],
                           ),
@@ -2433,7 +2436,7 @@ class CustomerOrderView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Current Due (လက်ကျန်ကျန်ငွေ):', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
+                              Text('${'due_amount'.tr}:', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
                               Text(Formatters.formatCurrency(order.dueAmount), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.error)),
                             ],
                           ),
@@ -2443,8 +2446,8 @@ class CustomerOrderView extends StatelessWidget {
                     const SizedBox(height: 14),
 
                     // Fulfillment Selector
-                    const Text('Fulfillment Method (ပို့ဆောင်ရေး):',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                    Text('fulfillment_delivery'.tr,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -2453,7 +2456,7 @@ class CustomerOrderView extends StatelessWidget {
                             avatar: Icon(Icons.storefront_rounded,
                                 size: 16,
                                 color: fulfillmentType == 'SELF_COLLECT' ? Colors.white : AppColors.textSecondary),
-                            label: const Text('Self-Collected (ဆိုင်လာယူ)', style: TextStyle(fontSize: 11)),
+                            label: Text('self_collected'.tr, style: const TextStyle(fontSize: 11)),
                             selected: fulfillmentType == 'SELF_COLLECT',
                             selectedColor: AppColors.primary,
                             onSelected: (_) {
@@ -2470,7 +2473,7 @@ class CustomerOrderView extends StatelessWidget {
                             avatar: Icon(Icons.local_shipping_rounded,
                                 size: 16,
                                 color: fulfillmentType == 'DELIVERY' ? Colors.white : AppColors.textSecondary),
-                            label: const Text('Delivery Service (ပို့ဆောင်ရေး)', style: TextStyle(fontSize: 11)),
+                            label: Text('delivery_service'.tr, style: const TextStyle(fontSize: 11)),
                             selected: fulfillmentType == 'DELIVERY',
                             selectedColor: AppColors.primary,
                             onSelected: (_) {
@@ -2563,7 +2566,7 @@ class CustomerOrderView extends StatelessWidget {
                                         const SizedBox(width: 5),
                                         Expanded(
                                           child: Text(
-                                            screenWidth < 400 ? 'In-House Delivery Income' : 'In-House Delivery Income (ဆိုင်တွင်းပို့ခဝင်ငွေ)',
+                                            'in_house_delivery_income'.tr,
                                             style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Colors.tealAccent),
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -2607,7 +2610,7 @@ class CustomerOrderView extends StatelessWidget {
                                 const SizedBox(width: 6),
                                 Expanded(
                                   child: Text(
-                                    screenWidth < 420 ? 'Cash on Delivery (COD)' : 'Cash on Delivery (COD / ပစ္စည်းရောက်ငွေချေ)',
+                                    'cash_on_delivery'.tr,
                                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -2625,9 +2628,9 @@ class CustomerOrderView extends StatelessWidget {
                               TextField(
                                 controller: codAmountCtrl,
                                 keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: 'COD Amount to Collect by Courier (ကောက်ခံမည့်ငွေ) *',
-                                  prefixIcon: Icon(Icons.attach_money_rounded, size: 18, color: Colors.amber),
+                                decoration: InputDecoration(
+                                  labelText: 'cod_amount_collect'.tr,
+                                  prefixIcon: const Icon(Icons.attach_money_rounded, size: 18, color: Colors.amber),
                                 ),
                               ),
                             ],
@@ -2644,7 +2647,7 @@ class CustomerOrderView extends StatelessWidget {
                         keyboardType: TextInputType.number,
                         onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
-                          labelText: 'Payment Amount to Collect (ကောက်ခံမည့်ငွေ) *',
+                          labelText: 'cod_amount_collect'.tr,
                           prefixIcon: const Icon(Icons.payments_outlined, size: 20, color: Colors.green),
                           suffixIcon: TextButton(
                             onPressed: () {
@@ -2661,12 +2664,12 @@ class CustomerOrderView extends StatelessWidget {
                       // Payment Method Selector
                       DropdownButtonFormField<String>(
                         value: selectedPaymentMethod,
-                        decoration: const InputDecoration(
-                          labelText: 'Payment Method (ငွေပေးချေမှုစနစ်)',
-                          prefixIcon: Icon(Icons.payment_rounded, size: 18, color: AppColors.primaryLight),
+                        decoration: InputDecoration(
+                          labelText: 'payment_method'.tr,
+                          prefixIcon: const Icon(Icons.payment_rounded, size: 18, color: AppColors.primaryLight),
                         ),
-                        items: const [
-                          DropdownMenuItem(value: 'cash', child: Text('💵 Cash (ငွေသား)')),
+                        items: [
+                          DropdownMenuItem(value: 'cash', child: Text('💵 ${'pay_cash'.tr}')),
                           DropdownMenuItem(value: 'kpay', child: Text('📱 KBZPay')),
                           DropdownMenuItem(value: 'wave', child: Text('🟡 WavePay')),
                           DropdownMenuItem(value: 'cbpay', child: Text('🔵 CBPay')),
@@ -2685,7 +2688,9 @@ class CustomerOrderView extends StatelessWidget {
                           activeColor: AppColors.secondary,
                           contentPadding: EdgeInsets.zero,
                           title: Text(
-                            'Charge remaining ${Formatters.formatCurrency(remainingAfterPay)} to customer credit account (အကြွေးစာရင်းသွင်းမည်)',
+                            Get.locale?.languageCode == 'my'
+                                ? 'ကျန်ရှိသော ${Formatters.formatCurrency(remainingAfterPay)} ကို အကြွေးစာရင်းသွင်းမည်'
+                                : 'Charge remaining ${Formatters.formatCurrency(remainingAfterPay)} to customer credit account',
                             style: const TextStyle(fontSize: 11.5, color: AppColors.textPrimary),
                           ),
                           onChanged: (v) => setState(() => chargeDebtToAccount = v ?? false),

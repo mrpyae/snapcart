@@ -230,23 +230,23 @@ class VoucherOwnerDialogs {
                         const SizedBox(height: 14),
 
                         // In-Place Header Adjustments
-                        const Text('Modify Header Details:',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                        Text(Get.locale?.languageCode == 'my' ? 'အချက်အလက်များ ပြင်ဆင်ရန်:' : 'Modify Header Details:',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                         const SizedBox(height: 8),
 
                         // Customer Selector
                         DropdownButtonFormField<CustomerModel?>(
                           value: selectedCustomer,
                           isExpanded: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Customer (အဝယ်ယူသူ)',
-                            prefixIcon: Icon(Icons.person_outline_rounded, size: 18),
+                          decoration: InputDecoration(
+                            labelText: Get.locale?.languageCode == 'my' ? 'ဝယ်ယူသူ' : 'Customer',
+                            prefixIcon: const Icon(Icons.person_outline_rounded, size: 18),
                             isDense: true,
                           ),
                           items: [
-                            const DropdownMenuItem<CustomerModel?>(
+                            DropdownMenuItem<CustomerModel?>(
                               value: null,
-                              child: Text('Walk-in Customer (ဆိုင်လာဝယ်သူ)'),
+                              child: Text(Get.locale?.languageCode == 'my' ? 'ဆိုင်လာဝယ်သူ' : 'Walk-in Customer'),
                             ),
                             ...customers.map((c) {
                               return DropdownMenuItem<CustomerModel?>(
@@ -263,18 +263,18 @@ class VoucherOwnerDialogs {
                         DropdownButtonFormField<String>(
                           value: selectedPayment,
                           isExpanded: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Payment Method (ငွေပေးချေမှုစနစ်)',
-                            prefixIcon: Icon(Icons.payment_rounded, size: 18),
+                          decoration: InputDecoration(
+                            labelText: Get.locale?.languageCode == 'my' ? 'ငွေပေးချေမှုစနစ်' : 'Payment Method',
+                            prefixIcon: const Icon(Icons.payment_rounded, size: 18),
                             isDense: true,
                           ),
-                          items: const [
-                            DropdownMenuItem(value: 'cash', child: Text('💵 Cash (ငွေသား)')),
-                            DropdownMenuItem(value: 'kpay', child: Text('📱 KBZPay')),
-                            DropdownMenuItem(value: 'wave', child: Text('🟡 WavePay')),
-                            DropdownMenuItem(value: 'cbpay', child: Text('🔵 CBPay')),
-                            DropdownMenuItem(value: 'ayapay', child: Text('🔴 AYA Pay')),
-                            DropdownMenuItem(value: 'bank_transfer', child: Text('🏦 Bank Transfer')),
+                          items: [
+                            DropdownMenuItem(value: 'cash', child: Text(Get.locale?.languageCode == 'my' ? '💵 ငွေသား' : '💵 Cash')),
+                            const DropdownMenuItem(value: 'kpay', child: Text('📱 KBZPay')),
+                            const DropdownMenuItem(value: 'wave', child: Text('🟡 WavePay')),
+                            const DropdownMenuItem(value: 'cbpay', child: Text('🔵 CBPay')),
+                            const DropdownMenuItem(value: 'ayapay', child: Text('🔴 AYA Pay')),
+                            const DropdownMenuItem(value: 'bank_transfer', child: Text('🏦 Bank Transfer')),
                           ],
                           onChanged: (val) => setState(() => selectedPayment = val ?? 'cash'),
                         ),
@@ -286,7 +286,7 @@ class VoucherOwnerDialogs {
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           onChanged: (_) => setState(() {}),
                           decoration: InputDecoration(
-                            labelText: 'Paid Amount (ပေးငွေ)',
+                            labelText: Get.locale?.languageCode == 'my' ? 'ပေးငွေ' : 'Paid Amount',
                             prefixIcon: const Icon(Icons.attach_money_rounded, size: 18),
                             isDense: true,
                             suffixIcon: TextButton(

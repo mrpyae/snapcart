@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CustomerOrderItemModel {
   final String id;
@@ -157,7 +158,7 @@ class CustomerOrderModel {
       case 'TIKTOK':
         return 'TikTok';
       case 'WALK_IN':
-        return 'Walk-in (ဆိုင်လာ)';
+        return 'walk_in_customer'.tr;
       case 'OTHER':
       default:
         return 'Other';
@@ -166,15 +167,16 @@ class CustomerOrderModel {
 
   // Appointment Type Label Helper
   String get appointmentTypeLabel {
+    final isEn = Get.locale?.languageCode == 'en';
     switch (appointmentType.toUpperCase()) {
       case 'LOOM_WEAVING':
-        return 'ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း';
+        return isEn ? 'Loom Weaving' : 'ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း';
       case 'FABRIC_DELIVERY_IN':
-        return 'အထည်လာပို့ခြင်း';
+        return isEn ? 'Fabric In Delivery' : 'အထည်လာပို့ခြင်း';
       case 'PACKING':
-        return 'ပစ္စည်းထုတ်ပိုးခြင်း';
+        return isEn ? 'Packing' : 'ပစ္စည်းထုတ်ပိုးခြင်း';
       case 'DELIVERY':
-        return 'ပို့ဆောင်ခြင်း';
+        return isEn ? 'Delivery' : 'ပို့ဆောင်ခြင်း';
       default:
         return appointmentType;
     }
@@ -182,20 +184,21 @@ class CustomerOrderModel {
 
   // Status Label Helper
   String get statusLabel {
+    final isEn = Get.locale?.languageCode == 'en';
     switch (status.toUpperCase()) {
       case 'CONFIRMED':
-        return 'အတည်ပြုပြီး';
+        return isEn ? 'Confirmed' : 'အတည်ပြုပြီး';
       case 'IN_PROGRESS':
-        return 'ရက်လုပ်ဆဲ';
+        return isEn ? 'In Progress' : 'ရက်လုပ်ဆဲ';
       case 'READY_FOR_PICKUP':
-        return 'လာယူရန်အသင့်';
+        return isEn ? 'Ready for Pickup' : 'လာယူရန်အသင့်';
       case 'COMPLETED':
-        return 'အပြီးသတ်လွှဲပြောင်းပြီး';
+        return isEn ? 'Completed' : 'အပြီးသတ်လွှဲပြောင်းပြီး';
       case 'CANCELLED':
-        return 'ပယ်ဖျက်';
+        return isEn ? 'Cancelled' : 'ပယ်ဖျက်';
       case 'PENDING':
       default:
-        return 'စောင့်ဆိုင်းဆဲ';
+        return isEn ? 'Pending' : 'စောင့်ဆိုင်းဆဲ';
     }
   }
 

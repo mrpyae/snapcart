@@ -85,8 +85,8 @@ class PurchaseView extends StatelessWidget {
                     TextField(
                       controller: nameCtrl,
                       autofocus: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Product Name (ပစ္စည်းအမည်) *',
+                      decoration: InputDecoration(
+                        labelText: '${'product_name'.tr} *',
                         hintText: 'e.g. မန္တလေးချည်ထည် ဝမ်းဆက်, ပိုးလုံချည်',
                         isDense: true,
                       ),
@@ -96,8 +96,8 @@ class PurchaseView extends StatelessWidget {
                     // Category selector
                     Obx(() => DropdownButtonFormField<String?>(
                       value: selectedCategoryId,
-                      decoration: const InputDecoration(
-                        labelText: 'Category (အမျိုးအစား)',
+                      decoration: InputDecoration(
+                        labelText: 'category'.tr,
                         isDense: true,
                       ),
                       items: [
@@ -118,8 +118,8 @@ class PurchaseView extends StatelessWidget {
                           child: TextField(
                             controller: costCtrl,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Cost Price (ဝယ်စျေး) *',
+                            decoration: InputDecoration(
+                              labelText: '${'cost_price'.tr} *',
                               hintText: 'e.g. 15000',
                               isDense: true,
                             ),
@@ -130,8 +130,8 @@ class PurchaseView extends StatelessWidget {
                           child: TextField(
                             controller: retailCtrl,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Retail (လက်လီ) *',
+                            decoration: InputDecoration(
+                              labelText: '${'retail_price'.tr} *',
                               hintText: 'e.g. 22000',
                               isDense: true,
                             ),
@@ -142,8 +142,8 @@ class PurchaseView extends StatelessWidget {
                           child: TextField(
                             controller: wholesaleCtrl,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Wholesale (လက်ကား)',
+                            decoration: InputDecoration(
+                              labelText: 'wholesale_price'.tr,
                               hintText: 'e.g. 18000',
                               isDense: true,
                             ),
@@ -160,8 +160,8 @@ class PurchaseView extends StatelessWidget {
                           child: TextField(
                             controller: qtyCtrl,
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: 'Initial Qty (အရေအတွက်) *',
+                            decoration: InputDecoration(
+                              labelText: '${'initial_qty'.tr} *',
                               hintText: 'e.g. 10',
                               isDense: true,
                             ),
@@ -171,13 +171,13 @@ class PurchaseView extends StatelessWidget {
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: selectedUnit,
-                            decoration: const InputDecoration(labelText: 'Unit (ယူနစ်)', isDense: true),
-                            items: const [
-                              DropdownMenuItem(value: 'piece', child: Text('piece (ထည်)')),
-                              DropdownMenuItem(value: 'set', child: Text('set (ဝမ်းဆက်)')),
-                              DropdownMenuItem(value: 'yard', child: Text('yard (ကိုက်)')),
-                              DropdownMenuItem(value: 'roll', child: Text('roll (လိပ်)')),
-                              DropdownMenuItem(value: 'pack', child: Text('pack (ထုတ်)')),
+                            decoration: InputDecoration(labelText: 'unit'.tr, isDense: true),
+                            items: [
+                              DropdownMenuItem(value: 'piece', child: Text('unit_piece'.tr)),
+                              DropdownMenuItem(value: 'set', child: Text('unit_set'.tr)),
+                              DropdownMenuItem(value: 'yard', child: Text('unit_yard'.tr)),
+                              DropdownMenuItem(value: 'roll', child: Text('unit_roll'.tr)),
+                              DropdownMenuItem(value: 'pack', child: Text('unit_pack'.tr)),
                             ],
                             onChanged: (val) => setState(() => selectedUnit = val ?? 'piece'),
                           ),
@@ -192,8 +192,8 @@ class PurchaseView extends StatelessWidget {
                         Expanded(
                           child: TextField(
                             controller: fabricCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'Fabric (အထည်သား)',
+                            decoration: InputDecoration(
+                              labelText: 'fabric'.tr,
                               isDense: true,
                             ),
                           ),
@@ -353,7 +353,7 @@ class PurchaseView extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Order Type / လုပ်ဆောင်ချက် အမျိုးအစား:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                                Text('order_type_action'.tr, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                                 const SizedBox(height: 6),
                                 Row(
                                   children: [
@@ -379,7 +379,7 @@ class PurchaseView extends StatelessWidget {
                                               const SizedBox(width: 6),
                                               Flexible(
                                                 child: Text(
-                                                  'Direct Stock-In (ချက်ချင်းသွင်းမည်)',
+                                                  'direct_stock_in'.tr,
                                                   style: TextStyle(
                                                     fontSize: 11.5,
                                                     fontWeight: controller.isDirectStockIn.value ? FontWeight.bold : FontWeight.normal,
@@ -416,7 +416,7 @@ class PurchaseView extends StatelessWidget {
                                               const SizedBox(width: 6),
                                               Flexible(
                                                 child: Text(
-                                                  'Place Supplier Order (မှာယူထားမည်)',
+                                                  'place_supplier_order'.tr,
                                                   style: TextStyle(
                                                     fontSize: 11.5,
                                                     fontWeight: !controller.isDirectStockIn.value ? FontWeight.bold : FontWeight.normal,
@@ -440,14 +440,16 @@ class PurchaseView extends StatelessWidget {
                                       color: Colors.blue.withOpacity(0.08),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       children: [
-                                        Icon(Icons.info_outline_rounded, size: 14, color: Colors.blue),
-                                        SizedBox(width: 6),
+                                        const Icon(Icons.info_outline_rounded, size: 14, color: Colors.blue),
+                                        const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
-                                            'မှာယူမှုအဆင့်တွင် စတော့ထဲ ချက်ချင်း မတိုးသေးပါ။ ပစ္စည်းရောက်ရှိချိန်မှသာ Receive Stock ဖြင့် စစ်ဆေးလက်ခံပါမည်။',
-                                            style: TextStyle(fontSize: 10.5, color: Colors.blue, fontWeight: FontWeight.w500),
+                                            Get.locale?.languageCode == 'my'
+                                                ? 'မှာယူမှုအဆင့်တွင် စတော့ထဲ ချက်ချင်း မတိုးသေးပါ။ ပစ္စည်းရောက်ရှိချိန်မှသာ စစ်ဆေးလက်ခံပါမည်။'
+                                                : 'Stock will not be added immediately. Items will be added upon receiving.',
+                                            style: const TextStyle(fontSize: 10.5, color: Colors.blue, fontWeight: FontWeight.w500),
                                           ),
                                         ),
                                       ],
@@ -471,9 +473,9 @@ class PurchaseView extends StatelessWidget {
 
                                   return DropdownButtonFormField<String?>(
                                     value: dropdownValue,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Select Supplier / Weaver (ကုန်သွင်းသူ/ရက္ကန်း) *',
-                                      prefixIcon: Icon(Icons.business_rounded, size: 18, color: AppColors.primaryLight),
+                                    decoration: InputDecoration(
+                                      labelText: '${'select_supplier'.tr} *',
+                                      prefixIcon: const Icon(Icons.business_rounded, size: 18, color: AppColors.primaryLight),
                                       isDense: true,
                                     ),
                                     items: [
@@ -512,9 +514,9 @@ class PurchaseView extends StatelessWidget {
                                         controller.expectedDeliveryDate.value = expectedDateCtrl.text;
                                       }
                                     },
-                                    decoration: const InputDecoration(
-                                      labelText: 'Expected Delivery (ရမည့်ရက်)',
-                                      prefixIcon: Icon(Icons.calendar_month_rounded, size: 18, color: Colors.blue),
+                                    decoration: InputDecoration(
+                                      labelText: 'expected_delivery'.tr,
+                                      prefixIcon: const Icon(Icons.calendar_month_rounded, size: 18, color: Colors.blue),
                                       isDense: true,
                                     ),
                                   ),
@@ -528,9 +530,9 @@ class PurchaseView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                'Select Products (ပစ္စည်းများ ရွေးချယ်မည်)',
-                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                              Text(
+                                'select_products'.tr,
+                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                               ),
                               SizedBox(
                                 height: 34,
@@ -562,9 +564,9 @@ class PurchaseView extends StatelessWidget {
                             return DropdownButtonFormField<String?>(
                               value: null,
                               isExpanded: true,
-                              decoration: const InputDecoration(
-                                labelText: 'Choose from Product Catalog (ပစ္စည်း ရွေးချယ်ရန်)',
-                                prefixIcon: Icon(Icons.inventory_2_outlined, size: 18, color: AppColors.secondary),
+                              decoration: InputDecoration(
+                                labelText: 'choose_product_catalog'.tr,
+                                prefixIcon: const Icon(Icons.inventory_2_outlined, size: 18, color: AppColors.secondary),
                                 isDense: true,
                               ),
                               items: [
@@ -761,8 +763,8 @@ class PurchaseView extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Purchase Items & Margins (ဝယ်ယူမည့် ပစ္စည်းစာရင်း)',
-                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                              Text('purchase_items_margins'.tr,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                               Obx(() => Text('${controller.cart.length} item(s)',
                                   style: const TextStyle(fontSize: 11, color: AppColors.textMuted))),
                             ],
@@ -854,7 +856,7 @@ class PurchaseView extends StatelessWidget {
                                             child: TextFormField(
                                               initialValue: item.costPrice.toStringAsFixed(0),
                                               keyboardType: TextInputType.number,
-                                              decoration: const InputDecoration(labelText: 'Cost (ဝယ်စျေး)', isDense: true),
+                                              decoration: InputDecoration(labelText: 'cost'.tr, isDense: true),
                                               onChanged: (val) {
                                                 final c = double.tryParse(val) ?? 0.0;
                                                 controller.updateItemCost(idx, c);
@@ -1036,7 +1038,7 @@ class PurchaseView extends StatelessWidget {
                                       child: TextField(
                                         controller: paidCtrl,
                                         keyboardType: TextInputType.number,
-                                        decoration: const InputDecoration(labelText: 'Paid / Advance Paid (ပေးငွေ) Ks'),
+                                        decoration: InputDecoration(labelText: 'paid_advance_paid'.tr),
                                         onChanged: (val) {
                                           controller.paidAmount.value = double.tryParse(val) ?? 0.0;
                                         },
@@ -1113,7 +1115,7 @@ class PurchaseView extends StatelessWidget {
                             }
                           },
                           icon: Icon(controller.isDirectStockIn.value ? Icons.save_rounded : Icons.send_rounded, size: 18),
-                          label: Text(controller.isDirectStockIn.value ? 'Save & Stock In Now' : 'Place Supplier Order (မှာယူမည်)'),
+                          label: Text(controller.isDirectStockIn.value ? 'save_stock_in_now'.tr : 'place_order_btn'.tr),
                         ),
                       ),
                     ],
@@ -1172,7 +1174,7 @@ class PurchaseView extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Receive Goods / ပစ္စည်းလက်ခံစစ်ဆေးခြင်း',
+                              Text('receive_goods'.tr,
                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                               Text('PO: ${purchase.invoiceNo} • ${purchase.supplierName ?? "General Supplier"}',
                                   style: const TextStyle(fontSize: 11.5, color: AppColors.textMuted)),
@@ -1192,8 +1194,8 @@ class PurchaseView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Item Receiving Checklist (လက်ခံရရှိသည့် အရေအတွက် ရိုက်ထည့်ပါ):',
-                              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                          Text('item_receiving_checklist'.tr,
+                              style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                           const SizedBox(height: 8),
 
                           ListView.separated(
@@ -1262,16 +1264,18 @@ class PurchaseView extends StatelessWidget {
                                   activeColor: Colors.red,
                                   onChanged: (val) => setState(() => cancelRemaining = val ?? false),
                                 ),
-                                const Expanded(
+                                Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Close & Cancel Remaining (ကျန်ရှိသည့် ပစ္စည်းများ မရနိုင်တော့၍ ပယ်ဖျက်မည်)',
-                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                                        'close_cancel_remaining'.tr,
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                                       ),
                                       Text(
-                                        'Supplier ထံမှ ကျန်ရှိသည့် ပစ္စည်းများ ထပ်မံမရနိုင်တော့ပါက အော်ဒါကို ဤနေရာတွင် ပိတ်သိမ်းပါမည်။',
+                                        Get.locale?.languageCode == 'my'
+                                            ? 'ကုန်သွင်းသူထံမှ ကျန်ရှိသည့် ပစ္စည်းများ ထပ်မံမရနိုင်တော့ပါက အော်ဒါကို ဤနေရာတွင် ပိတ်သိမ်းပါမည်။'
+                                            : 'If remaining items cannot be delivered, close and complete this order here.',
                                         style: TextStyle(fontSize: 10.5, color: AppColors.textMuted),
                                       ),
                                     ],
@@ -1289,9 +1293,9 @@ class PurchaseView extends StatelessWidget {
                                 child: TextField(
                                   controller: additionalPaidCtrl,
                                   keyboardType: TextInputType.number,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Additional Payment Made (ထပ်မံပေးချေငွေ)',
-                                    prefixIcon: Icon(Icons.payments_outlined, size: 18, color: Colors.green),
+                                  decoration: InputDecoration(
+                                    labelText: 'additional_payment_made'.tr,
+                                    prefixIcon: const Icon(Icons.payments_outlined, size: 18, color: Colors.green),
                                     isDense: true,
                                   ),
                                 ),
@@ -1315,8 +1319,8 @@ class PurchaseView extends StatelessWidget {
 
                           TextField(
                             controller: receivingNotesCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'Receiving Remark / Note (လက်ခံရရှိမှု မှတ်ချက်)',
+                            decoration: InputDecoration(
+                              labelText: 'receiving_remark'.tr,
                               hintText: 'e.g. ၇ ထည် အရည်အသွေး ကောင်းမွန်စွာ လက်ခံရရှိပါသည်',
                               isDense: true,
                             ),
@@ -1438,7 +1442,7 @@ class PurchaseView extends StatelessWidget {
                         children: [
                           // Previous History
                           if (purchase.followUpNotes != null && purchase.followUpNotes!.isNotEmpty) ...[
-                            const Text('Previous Follow-up History (ယခင် ဆက်သွယ်မှုမှတ်တမ်းများ):', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
+                            Text('previous_followup_history'.tr, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
                             const SizedBox(height: 6),
                             Container(
                               width: double.infinity,
@@ -1456,7 +1460,7 @@ class PurchaseView extends StatelessWidget {
                             const SizedBox(height: 14),
                           ],
 
-                          const Text('Log New Follow-up Check-in (အသစ် မှတ်တမ်းတင်မည်):', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                          Text('log_new_followup'.tr, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                           const SizedBox(height: 8),
 
                           TextField(
@@ -1483,9 +1487,9 @@ class PurchaseView extends StatelessWidget {
                                 newDateCtrl.text = DateFormat('yyyy-MM-dd').format(picked);
                               }
                             },
-                            decoration: const InputDecoration(
-                              labelText: 'Reschedule Expected Delivery Date (ရက်ရွှေ့ဆိုင်းမည်)',
-                              prefixIcon: Icon(Icons.calendar_month_rounded, size: 18, color: Colors.blue),
+                            decoration: InputDecoration(
+                              labelText: 'reschedule_delivery_date'.tr,
+                              prefixIcon: const Icon(Icons.calendar_month_rounded, size: 18, color: Colors.blue),
                             ),
                           ),
                         ],
@@ -1778,15 +1782,15 @@ class PurchaseView extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildFilterChip(controller, 'ALL', 'အားလုံး'),
+                  _buildFilterChip(controller, 'ALL', 'status_all'.tr),
                   const SizedBox(width: 6),
-                  _buildFilterChip(controller, 'ORDERED', 'မှာယူထားဆဲ'),
+                  _buildFilterChip(controller, 'ORDERED', 'status_ordered'.tr),
                   const SizedBox(width: 6),
-                  _buildFilterChip(controller, 'OVERDUE', '⚠️ရက်လွန်'),
+                  _buildFilterChip(controller, 'OVERDUE', 'status_overdue'.tr),
                   const SizedBox(width: 6),
-                  _buildFilterChip(controller, 'PARTIALLY_RECEIVED', 'တစ်စိတ်တစ်ပိုင်းရရှိ'),
+                  _buildFilterChip(controller, 'PARTIALLY_RECEIVED', 'status_partially_received'.tr),
                   const SizedBox(width: 6),
-                  _buildFilterChip(controller, 'RECEIVED', 'စတော့ဝင်ပြီး'),
+                  _buildFilterChip(controller, 'RECEIVED', 'status_received'.tr),
                 ],
               ),
             )),
@@ -1849,7 +1853,7 @@ class PurchaseView extends StatelessWidget {
 
                     if (isOverdue) {
                       statusColor = Colors.red;
-                      statusText = '⚠️ Overdue (ရက်လွန်)';
+                      statusText = '⚠️ ${'status_overdue'.tr}';
                     } else if (p.status == 'ORDERED') {
                       statusColor = Colors.blue;
                     } else if (p.status == 'PARTIALLY_RECEIVED') {
