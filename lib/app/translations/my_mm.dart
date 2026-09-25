@@ -1,0 +1,140 @@
+const Map<String, String> myMM = {
+  // App General
+  'app_title': 'SnapCart အရောင်းစနစ်',
+  'language': 'ဘာသာစကား',
+  'language_en': 'English (အင်္ဂလိပ်)',
+  'language_my': 'မြန်မာဘာသာ',
+  'language_desc': 'အသုံးပြုလိုသော ဘာသာစကားကို ရွေးချယ်ပါ',
+  'language_switched': 'မြန်မာဘာသာသို့ ပြောင်းလဲပြီးပါပြီ',
+
+  // Navigation Menus
+  'menu_pos': 'POS အရောင်းကောင်တာ',
+  'menu_orders': 'အော်ဒါနှင့် ရက်ချိန်းများ',
+  'menu_products': 'ကုန်ပစ္စည်းများ',
+  'menu_purchases': 'အဝယ်နှင့် ပစ္စည်းသွင်းခြင်း',
+  'menu_suppliers': 'ကုန်သွင်းသူများ (AP)',
+  'menu_customers': 'ဖောက်သည်များ (AR)',
+  'menu_delivery': 'ပို့ဆောင်ရေး ဝန်ဆောင်မှုများ',
+  'menu_expenses': 'အသုံးစရိတ်များ',
+  'menu_reports': 'အရောင်းနှင့် အစီရင်ခံစာ',
+  'menu_settings': 'ဆက်တင်နှင့် ချိတ်ဆက်မှု',
+
+  // Common Actions
+  'btn_save': 'သိမ်းမည်',
+  'btn_cancel': 'ပယ်ဖျက်',
+  'btn_delete': 'ဖျက်မည်',
+  'btn_edit': 'ပြင်ဆင်မည်',
+  'btn_confirm': 'အတည်ပြုမည်',
+  'btn_close': 'ပိတ်မည်',
+  'btn_back': 'ရှေ့သို့ပြန်သွား',
+  'btn_refresh': 'အသစ်ပြန်တင်မည်',
+  'btn_search': 'ရှာဖွေရန်...',
+  'btn_filter': 'စစ်ထုတ်ရန်',
+  'btn_reset': 'မူလအတိုင်းပြန်ထား',
+  'btn_view': 'ကြည့်ရှုမည်',
+  'btn_add': 'အသစ်ထည့်မည်',
+  'btn_print': 'ဘောက်ချာထုတ်မည်',
+  'btn_export': 'ထုတ်ယူမည်',
+  'btn_import': 'ထည့်သွင်းမည်',
+  'btn_sync_now': 'ယခုဒေတာချိတ်ဆက်မည်',
+  'btn_logout': 'အကောင့်ထွက်မည်',
+  'btn_signin': 'အကောင့်ဝင်မည်',
+
+  // Dialog Titles & Messages
+  'confirm_delete': 'ဖျက်ရန် အတည်ပြုခြင်း',
+  'confirm_delete_msg': 'ဤအချက်အလက်ကို ဖျက်ရန် သေချာပါသလား? ပြန်လည်ရယူ၍ မရနိုင်ပါ။',
+  'confirm_logout': 'အကောင့်မှ ထွက်ခွာခြင်း',
+  'confirm_logout_msg': 'အကောင့်မှ ထွက်ရန် သေချာပါသလား?',
+  'success': 'အောင်မြင်ပါသည်',
+  'error': 'အမှားတစ်ခုဖြစ်ပွားသည်',
+  'warning': 'သတိပေးချက်',
+  'info': 'အသိပေးချက်',
+
+  // Settings Screen
+  'settings_title': 'ဆက်တင်နှင့် ချိတ်ဆက်မှု ဗဟို',
+  'settings_subtitle': '၂ ဘက်အသွားအပြန် ချိတ်ဆက်မှု၊ ဆိုင်ခွဲအချက်အလက်နှင့် ဒေတာသိမ်းဆည်းမှုများ',
+  'profile_active_branch': 'အသုံးပြုသူနှင့် လက်ရှိဆိုင်ခွဲ',
+  'guest_user': 'ဧည့်သည် (အကောင့်မဝင်ထားပါ)',
+  'sign_in_cloud': 'Cloud ဒေတာများနှင့် ချိတ်ဆက်ရန် အကောင့်ဝင်ပါ',
+  'switch_branch_role': 'ဆိုင်ခွဲ / ရာထူး ပရိုဖိုင် ပြောင်းလဲမည်',
+  'log_out_account': 'အကောင့်မှ ထွက်ခွာမည်',
+  'sign_in_account': 'အကောင့်သို့ ဝင်မည်',
+  
+  // Language Card
+  'language_settings': 'ဘာသာစကား ရွေးချယ်မှု',
+  'language_settings_subtitle': 'English သို့မဟုတ် မြန်မာဘာသာ (ယူနီကုဒ်) ကို ရွေးချယ်ပါ',
+  'lang_english_title': 'English',
+  'lang_english_sub': 'အင်္ဂလိပ် (ယူနိုက်တက်စတိတ်)',
+  'lang_myanmar_title': 'မြန်မာဘာသာ',
+  'lang_myanmar_sub': 'မြန်မာ (ယူနီကုဒ် စံနှုန်း)',
+
+  // Sync Hub
+  'sync_hub_title': '၂ ဘက်အသွားအပြန် ဒေတာချိတ်ဆက်မှု ဗဟို',
+  'sync_hub_subtitle': 'အသုံးပြုမှုပုံစံ ရွေးချယ်ပြီး ဖုန်းတွင်း SQLite ဒေတာများကို ဆာဗာနှင့် ချိတ်ဆက်ပါ',
+  'mode_hybrid': 'အွန်လိုင်း + အော့ဖ်လိုင်း နှစ်မျိုးလုံး (Hybrid)',
+  'mode_hybrid_sub': 'အင်တာနက်မရှိလည်း သုံးနိုင်ပြီး အင်တာနက်ရရှိပါက ဆာဗာသို့ အလိုအလျောက် ပို့ပေးပါသည်။',
+  'mode_online_only': 'အွန်လိုင်းသီးသန့် အသုံးပြုခြင်း',
+  'mode_online_only_sub': 'ဆာဗာချိတ်ဆက်မှု လိုအပ်ပါသည်။ အရောင်းများကို ဆာဗာသို့ ချက်ချင်းသိမ်းဆည်းပါသည်။',
+  'mode_offline_only': 'အော့ဖ်လိုင်းသီးသန့် အသုံးပြုခြင်း',
+  'mode_offline_only_sub': 'အရောင်းအားလုံးကို ဖုန်းတွင်း SQLite တွင်သာ သိမ်းပြီး ဆာဗာသို့ မပို့ပါ။',
+  'force_full_resync': 'ဒေတာအားလုံး အစမှအဆုံး ပြန်လည်ချိန်ညှိမည်',
+  
+  // Vouchers & Receipts
+  'voucher_design_title': 'ဘောက်ချာနှင့် ပြေစာ ပုံစံဒီဇိုင်း',
+  'voucher_design_subtitle': 'အပူသုံးပရင်တာ စာရွက်နှင့် PDF ဘောက်ချာပုံစံများကို စိတ်ကြိုက်ပြင်ဆင်ပါ',
+  'open_voucher_builder': 'ဘောက်ချာဒီဇိုင်း ပြင်ဆင်ရန် ဖွင့်ပါ',
+
+  // Printer & Hardware
+  'printer_settings_title': 'Bluetooth အပူသုံးပရင်တာ',
+  'printer_settings_subtitle': 'ကြိုးမဲ့ 58mm / 80mm ESC/POS ပြေစာပရင်တာ ချိတ်ဆက်မှု ဆက်တင်များ',
+  'configure_printer': 'Bluetooth ပရင်တာ စီစဉ်သတ်မှတ်မည်',
+
+  // Database Backup
+  'db_backup_title': 'SQLite ဒေတာဘေ့စ် သိမ်းဆည်း/ပြန်လည်ရယူခြင်း',
+  'db_backup_subtitle': 'ဒေတာများကို ဖုန်းတွင်းသို့ အရန်သိမ်းဆည်းခြင်း သို့မဟုတ် ပြန်လည်ရယူခြင်း',
+  'open_backup_manager': 'အရန်ဒေတာ စီမံခန့်ခွဲမှု ဖွင့်ပါ',
+
+  // Danger Zone / Data Cleanup
+  'danger_zone_title': 'ဒေတာစီမံခန့်ခွဲမှုနှင့် အစမှပြန်လည်စတင်ခြင်း',
+  'danger_zone_subtitle': 'စမ်းသပ်အရောင်းများ၊ အော်ဒါများကို ရှင်းလင်းခြင်း သို့မဟုတ် ဒေတာရှင်းထုတ်ခြင်း',
+  'open_data_cleanup': 'ဒေတာရှင်းလင်းမှု ဖွင့်ပါ',
+
+  // POS & Checkout
+  'pos_title': 'အရောင်းကောင်တာ',
+  'cart': 'ခြင်းတောင်း',
+  'cart_empty': 'ခြင်းတောင်းထဲတွင် ပစ္စည်းမရှိသေးပါ',
+  'subtotal': 'ကျသင့်ငွေပေါင်း',
+  'discount': 'လျှော့ဈေး',
+  'tax': 'အခွန်',
+  'total': 'စုစုပေါင်း ကျသင့်ငွေ',
+  'paid_amount': 'ပေးငွေ',
+  'due_amount': 'ကျန်ငွေ',
+  'change_amount': 'ပြန်အမ်းငွေ',
+  'payment_method': 'ငွေပေးချေမှု ပုံစံ',
+  'pay_cash': 'ငွေသား',
+  'pay_kpay': 'KPay',
+  'pay_wave': 'Wave Money',
+  'pay_bank': 'ဘဏ်လွှဲငွေ',
+  'pay_credit': 'အကြွေး (စောင့်ဆိုင်းငွေ)',
+  'checkout': 'ငွေရှင်းမည်',
+  'hold_order': 'ခေတ္တဆိုင်းငံ့ထားမည်',
+  'held_orders': 'ဆိုင်းငံ့ထားသော အော်ဒါများ',
+  'recent_vouchers': 'ယနေ့ အရောင်းဘောက်ချာများ',
+  'voucher_no': 'ဘောက်ချာအမှတ်',
+  'customer': 'ဖောက်သည်',
+  'walk_in_customer': 'လမ်းကြုံဝယ်ယူသူ',
+  'items': 'ပစ္စည်းများ',
+  'qty': 'အရေအတွက်',
+  'price': 'ဈေးနှုန်း',
+  'amount': 'သင့်ငွေ',
+
+  // Owner Access
+  'owner_access': 'ဆိုင်ရှင် လုပ်ပိုင်ခွင့်',
+  'owner_passcode_required': 'ဆိုင်ရှင် လျှို့ဝှက်ကုဒ် လိုအပ်ပါသည်',
+  'enter_owner_passcode': 'လုပ်ဆောင်ရန် ၄ လုံးပါ ဆိုင်ရှင် လျှို့ဝှက်ကုဒ်ကို ရိုက်ထည့်ပါ',
+  'edit_voucher': 'ဘောက်ချာ ပြင်ဆင်မည်',
+  'void_delete_voucher': 'ဘောက်ချာ ပယ်ဖျက်/ဖျက်မည်',
+  'recall_to_cart': 'ခြင်းတောင်းထဲသို့ ပြန်လည်ခေါ်ယူမည်',
+  'void_confirm_title': 'ဘောက်ချာ ပယ်ဖျက်ရန် အတည်ပြုပါ',
+  'void_confirm_body': 'ဤဘောက်ချာကို ပယ်ဖျက်ရန် သေချာပါသလား? ကုန်ပစ္စည်းလက်ကျန်များကို ပြန်လည်ဖြည့်တင်းပေးမည်ဖြစ်ပြီး ဖောက်သည်/ပို့ဆောင်ရေး ကြွေးကျန်များကို ပြန်လည်နှုတ်ပယ်ပေးပါမည်။',
+};

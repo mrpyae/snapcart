@@ -44,6 +44,19 @@ class AppController extends GetxController {
     return role == 'owner' || role == 'admin';
   }
 
+  // Language & Internationalization
+  final Rx<Locale> currentLocale = const Locale('en', 'US').obs;
+  String get currentLanguageCode => currentLocale.value.languageCode;
+
+  Future<void> changeLanguage(String langCode) async {
+    final newLocale = (langCode == 'my') ? const Locale('my', 'MM') : const Locale('en', 'US');
+    currentLocale.value = newLocale;
+    await DBHelper.instance.setSetting('app_language', langCode);
+    try {
+      await Get.updateLocale(newLocale);
+    } catch (_) {}
+  }
+
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
   @override
@@ -91,6 +104,14 @@ class AppController extends GetxController {
           }
         }
       }
+
+      // Restore saved language
+      final savedLang = await DBHelper.instance.getSetting('app_language');
+      if (savedLang != null && savedLang == 'my') {
+        currentLocale.value = const Locale('my', 'MM');
+        await Get.updateLocale(const Locale('my', 'MM'));
+      }
+
       update();
     } catch (_) {}
   }

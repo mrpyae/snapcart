@@ -1,0 +1,140 @@
+const Map<String, String> enUS = {
+  // App General
+  'app_title': 'SnapCart POS',
+  'language': 'Language',
+  'language_en': 'English',
+  'language_my': 'Myanmar (မြန်မာ)',
+  'language_desc': 'Select your preferred application display language',
+  'language_switched': 'Language switched to English',
+
+  // Navigation Menus
+  'menu_pos': 'POS Counter',
+  'menu_orders': 'Orders & Appointments',
+  'menu_products': 'Products',
+  'menu_purchases': 'Purchases & Stock In',
+  'menu_suppliers': 'Suppliers (AP)',
+  'menu_customers': 'Customers (AR)',
+  'menu_delivery': 'Delivery Services',
+  'menu_expenses': 'Expenses',
+  'menu_reports': 'Reports',
+  'menu_settings': 'Settings & Sync',
+
+  // Common Actions
+  'btn_save': 'Save',
+  'btn_cancel': 'Cancel',
+  'btn_delete': 'Delete',
+  'btn_edit': 'Edit',
+  'btn_confirm': 'Confirm',
+  'btn_close': 'Close',
+  'btn_back': 'Back',
+  'btn_refresh': 'Refresh',
+  'btn_search': 'Search...',
+  'btn_filter': 'Filter',
+  'btn_reset': 'Reset',
+  'btn_view': 'View',
+  'btn_add': 'Add New',
+  'btn_print': 'Print',
+  'btn_export': 'Export',
+  'btn_import': 'Import',
+  'btn_sync_now': 'Sync Now',
+  'btn_logout': 'Log Out',
+  'btn_signin': 'Sign In',
+
+  // Dialog Titles & Messages
+  'confirm_delete': 'Confirm Deletion',
+  'confirm_delete_msg': 'Are you sure you want to delete this item? This action cannot be undone.',
+  'confirm_logout': 'Confirm Logout',
+  'confirm_logout_msg': 'Are you sure you want to log out of your account?',
+  'success': 'Success',
+  'error': 'Error',
+  'warning': 'Warning',
+  'info': 'Information',
+
+  // Settings Screen
+  'settings_title': 'Settings & Sync Hub',
+  'settings_subtitle': 'Configure 2-Way Delta Sync, store profiles & backup',
+  'profile_active_branch': 'Profile & Active Branch',
+  'guest_user': 'Guest User (Not Logged In)',
+  'sign_in_cloud': 'Sign in to access synchronized cloud data',
+  'switch_branch_role': 'Switch Branch / Role Profile',
+  'log_out_account': 'Log Out of Account',
+  'sign_in_account': 'Sign In to Account',
+  
+  // Language Card
+  'language_settings': 'Language Settings',
+  'language_settings_subtitle': 'Choose between English and Myanmar (Burmese)',
+  'lang_english_title': 'English',
+  'lang_english_sub': 'English (United States)',
+  'lang_myanmar_title': 'မြန်မာဘာသာ',
+  'lang_myanmar_sub': 'Myanmar (Unicode)',
+
+  // Sync Hub
+  'sync_hub_title': '2-Way Delta Sync Hub',
+  'sync_hub_subtitle': 'Select operation mode and sync local SQLite transactions with MySQL server',
+  'mode_hybrid': 'Both Offline + Online (Hybrid)',
+  'mode_hybrid_sub': 'Operates with local SQLite; automatically syncs deltas with server when connected.',
+  'mode_online_only': 'Online Use Only',
+  'mode_online_only_sub': 'Requires active server connection. POS sales sync immediately; offline checkout blocked.',
+  'mode_offline_only': 'Offline Only',
+  'mode_offline_only_sub': 'Stores all transactions locally in SQLite. No server connection attempts.',
+  'force_full_resync': 'Force Full Re-Sync',
+  
+  // Vouchers & Receipts
+  'voucher_design_title': 'Sale Voucher & Receipt Design',
+  'voucher_design_subtitle': 'Customize thermal print slip and PDF paper invoice layouts',
+  'open_voucher_builder': 'Open Voucher Builder',
+
+  // Printer & Hardware
+  'printer_settings_title': 'Thermal Bluetooth Printer',
+  'printer_settings_subtitle': 'Configure wireless ESC/POS 58mm/80mm receipt printing',
+  'configure_printer': 'Configure Bluetooth Printer',
+
+  // Database Backup
+  'db_backup_title': 'SQLite Database Backup & Restore',
+  'db_backup_subtitle': 'Create snapshots or restore entire database from local storage',
+  'open_backup_manager': 'Open Backup & Restore Manager',
+
+  // Danger Zone / Data Cleanup
+  'danger_zone_title': 'Data Management & Reset',
+  'danger_zone_subtitle': 'Clear demo sales, orders, or reset data safely',
+  'open_data_cleanup': 'Open Data Cleanup Dialog',
+
+  // POS & Checkout
+  'pos_title': 'Point of Sale',
+  'cart': 'Cart',
+  'cart_empty': 'Cart is empty',
+  'subtotal': 'Subtotal',
+  'discount': 'Discount',
+  'tax': 'Tax',
+  'total': 'Total',
+  'paid_amount': 'Paid Amount',
+  'due_amount': 'Due Amount',
+  'change_amount': 'Change',
+  'payment_method': 'Payment Method',
+  'pay_cash': 'Cash',
+  'pay_kpay': 'KPay',
+  'pay_wave': 'Wave Money',
+  'pay_bank': 'Bank Transfer',
+  'pay_credit': 'Credit (Arrears)',
+  'checkout': 'Checkout',
+  'hold_order': 'Hold Order',
+  'held_orders': 'Held Orders',
+  'recent_vouchers': 'Recent Vouchers',
+  'voucher_no': 'Voucher No',
+  'customer': 'Customer',
+  'walk_in_customer': 'Walk-in Customer',
+  'items': 'Items',
+  'qty': 'Qty',
+  'price': 'Price',
+  'amount': 'Amount',
+
+  // Owner Access
+  'owner_access': 'Owner Access',
+  'owner_passcode_required': 'Owner Passcode Required',
+  'enter_owner_passcode': 'Enter 4-digit Owner Passcode to proceed',
+  'edit_voucher': 'Edit Voucher',
+  'void_delete_voucher': 'Void / Delete Voucher',
+  'recall_to_cart': 'Recall to POS Cart',
+  'void_confirm_title': 'Confirm Void Voucher',
+  'void_confirm_body': 'Are you sure you want to void this voucher? Stock will be restocked and customer/courier balances will be reversed.',
+};

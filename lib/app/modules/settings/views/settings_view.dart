@@ -24,10 +24,10 @@ class SettingsView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(isMobile ? 'Settings & Sync' : 'Settings & Sync Hub',
-                style: TextStyle(fontSize: Responsive.titleFontSize(context), fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            Obx(() => Text(isMobile ? 'menu_settings'.tr : 'settings_title'.tr,
+                style: TextStyle(fontSize: Responsive.titleFontSize(context), fontWeight: FontWeight.bold, color: AppColors.textPrimary))),
             const SizedBox(height: 2),
-            const Text('Configure 2-Way Delta Sync, store profiles & backup', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            Obx(() => Text('settings_subtitle'.tr, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary))),
             const SizedBox(height: 18),
 
             // Profile & Active Branch Card
@@ -75,7 +75,7 @@ class SettingsView extends StatelessWidget {
                           child: OutlinedButton.icon(
                             onPressed: () => Get.dialog(AccountSelectionDialog(accounts: user.accounts)),
                             icon: const Icon(Icons.switch_account_rounded, size: 16),
-                            label: const Text('Switch Branch / Role Profile'),
+                            label: Text('switch_branch_role'.tr),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: AppColors.primary),
                             ),
@@ -90,23 +90,23 @@ class SettingsView extends StatelessWidget {
                             showDialog(
                               context: context,
                               builder: (ctx) => AlertDialog(
-                                title: const Text('Confirm Logout'),
-                                content: const Text('Are you sure you want to log out of your account?'),
+                                title: Text('confirm_logout'.tr),
+                                content: Text('confirm_logout_msg'.tr),
                                 actions: [
-                                  TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+                                  TextButton(onPressed: () => Navigator.pop(ctx), child: Text('btn_cancel'.tr)),
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(ctx);
                                       appController.logout();
                                     },
-                                    child: const Text('Logout', style: TextStyle(color: Colors.red)),
+                                    child: Text('btn_logout'.tr, style: const TextStyle(color: Colors.red)),
                                   ),
                                 ],
                               ),
                             );
                           },
                           icon: const Icon(Icons.logout_rounded, size: 16, color: Colors.white),
-                          label: const Text('Log Out of Account', style: TextStyle(color: Colors.white)),
+                          label: Text('log_out_account'.tr, style: const TextStyle(color: Colors.white)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.error,
                             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -119,12 +119,126 @@ class SettingsView extends StatelessWidget {
                         child: ElevatedButton.icon(
                           onPressed: () => Get.toNamed(Routes.LOGIN),
                           icon: const Icon(Icons.login_rounded, size: 16),
-                          label: const Text('Sign In to Account'),
+                          label: Text('sign_in_account'.tr),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
                         ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            }),
+            const SizedBox(height: 16),
+
+            // Language Settings Card
+            Obx(() {
+              final currentCode = appController.currentLanguageCode;
+              return Container(
+                padding: EdgeInsets.all(isMobile ? 14 : 20),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.language_rounded, color: AppColors.primaryLight, size: 22),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'language_settings'.tr,
+                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'language_settings_subtitle'.tr,
+                                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (isMobile) ...[
+                      _buildLanguageOptionCard(
+                        title: 'English',
+                        subtitle: 'English (United States)',
+                        flagEmoji: '🇺🇸',
+                        isSelected: currentCode != 'my',
+                        onTap: () async {
+                          if (currentCode != 'en') {
+                            await appController.changeLanguage('en');
+                            Get.snackbar('language'.tr, 'language_switched'.tr,
+                                snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      _buildLanguageOptionCard(
+                        title: 'မြန်မာဘာသာ',
+                        subtitle: 'Myanmar (Unicode)',
+                        flagEmoji: '🇲🇲',
+                        isSelected: currentCode == 'my',
+                        onTap: () async {
+                          if (currentCode != 'my') {
+                            await appController.changeLanguage('my');
+                            Get.snackbar('language'.tr, 'language_switched'.tr,
+                                snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
+                          }
+                        },
+                      ),
+                    ] else ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildLanguageOptionCard(
+                              title: 'English',
+                              subtitle: 'English (United States)',
+                              flagEmoji: '🇺🇸',
+                              isSelected: currentCode != 'my',
+                              onTap: () async {
+                                if (currentCode != 'en') {
+                                  await appController.changeLanguage('en');
+                                  Get.snackbar('language'.tr, 'language_switched'.tr,
+                                      snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: _buildLanguageOptionCard(
+                              title: 'မြန်မာဘာသာ',
+                              subtitle: 'Myanmar (Unicode)',
+                              flagEmoji: '🇲🇲',
+                              isSelected: currentCode == 'my',
+                              onTap: () async {
+                                if (currentCode != 'my') {
+                                  await appController.changeLanguage('my');
+                                  Get.snackbar('language'.tr, 'language_switched'.tr,
+                                      snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
+                                }
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ],
@@ -645,6 +759,70 @@ class SettingsView extends StatelessWidget {
               activeColor: badgeColor,
               onChanged: (_) => onTap(),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageOptionCard({
+    required String title,
+    required String subtitle,
+    required String flagEmoji,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withOpacity(0.12) : AppColors.cardBgLight.withOpacity(0.35),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary.withOpacity(0.2) : AppColors.surface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              alignment: Alignment.center,
+              child: Text(flagEmoji, style: const TextStyle(fontSize: 20)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? AppColors.primaryLight : AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 20)
+            else
+              const Icon(Icons.radio_button_unchecked_rounded, color: AppColors.textMuted, size: 20),
           ],
         ),
       ),

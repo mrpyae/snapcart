@@ -34,16 +34,16 @@ class _HomeViewState extends State<HomeView> {
     return idx == -1 ? 0 : idx;
   }
   final List<Map<String, dynamic>> menuItems = [
-    {'title': 'POS Counter', 'icon': Icons.point_of_sale_rounded, 'perm': 'pos_sale', 'view': const POSView()},
-    {'title': 'Orders & Appointments', 'icon': Icons.event_note_rounded, 'perm': 'pos_sale', 'view': const CustomerOrderView()},
-    {'title': 'Products', 'icon': Icons.inventory_2_rounded, 'perm': 'manage_products', 'view': const ProductListView()},
-    {'title': 'Purchases & Stock In', 'icon': Icons.add_shopping_cart_rounded, 'perm': 'manage_stock', 'view': const PurchaseView()},
-    {'title': 'Suppliers (AP)', 'icon': Icons.local_shipping_rounded, 'perm': 'manage_stock', 'view': const SupplierView()},
-    {'title': 'Customers (AR)', 'icon': Icons.people_alt_rounded, 'perm': 'pos_sale', 'view': const CustomerView()},
-    {'title': 'Delivery Services', 'icon': Icons.delivery_dining_rounded, 'perm': 'pos_sale', 'view': const DeliveryServiceView()},
-    {'title': 'Expenses', 'icon': Icons.receipt_long_rounded, 'perm': 'manage_expenses', 'view': const ExpenseView()},
-    {'title': 'Reports', 'icon': Icons.bar_chart_rounded, 'perm': 'view_reports', 'view': const ReportView()},
-    {'title': 'Settings', 'icon': Icons.settings_rounded, 'perm': null, 'view': const SettingsView()},
+    {'title': 'POS Counter', 'title_key': 'menu_pos', 'icon': Icons.point_of_sale_rounded, 'perm': 'pos_sale', 'view': const POSView()},
+    {'title': 'Orders & Appointments', 'title_key': 'menu_orders', 'icon': Icons.event_note_rounded, 'perm': 'pos_sale', 'view': const CustomerOrderView()},
+    {'title': 'Products', 'title_key': 'menu_products', 'icon': Icons.inventory_2_rounded, 'perm': 'manage_products', 'view': const ProductListView()},
+    {'title': 'Purchases & Stock In', 'title_key': 'menu_purchases', 'icon': Icons.add_shopping_cart_rounded, 'perm': 'manage_stock', 'view': const PurchaseView()},
+    {'title': 'Suppliers (AP)', 'title_key': 'menu_suppliers', 'icon': Icons.local_shipping_rounded, 'perm': 'manage_stock', 'view': const SupplierView()},
+    {'title': 'Customers (AR)', 'title_key': 'menu_customers', 'icon': Icons.people_alt_rounded, 'perm': 'pos_sale', 'view': const CustomerView()},
+    {'title': 'Delivery Services', 'title_key': 'menu_delivery', 'icon': Icons.delivery_dining_rounded, 'perm': 'pos_sale', 'view': const DeliveryServiceView()},
+    {'title': 'Expenses', 'title_key': 'menu_expenses', 'icon': Icons.receipt_long_rounded, 'perm': 'manage_expenses', 'view': const ExpenseView()},
+    {'title': 'Reports', 'title_key': 'menu_reports', 'icon': Icons.bar_chart_rounded, 'perm': 'view_reports', 'view': const ReportView()},
+    {'title': 'Settings', 'title_key': 'menu_settings', 'icon': Icons.settings_rounded, 'perm': null, 'view': const SettingsView()},
   ];
 
   void _confirmLogout(BuildContext context, AppController controller) {
@@ -294,13 +294,13 @@ class _HomeViewState extends State<HomeView> {
                     item['icon'] as IconData,
                     color: isSelected ? AppColors.primaryLight : AppColors.textSecondary,
                   ),
-                  title: Text(
-                    item['title'] as String,
+                  title: Obx(() => Text(
+                    (item['title_key'] as String?)?.tr ?? (item['title'] as String),
                     style: TextStyle(
                       color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
-                  ),
+                  )),
                   onTap: () {
                     setState(() => _selectedIndex = index);
                     Navigator.of(context).pop();
@@ -333,7 +333,7 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         body: menuItems[_selectedIndex]['view'] as Widget,
-        bottomNavigationBar: BottomNavigationBar(
+        bottomNavigationBar: Obx(() => BottomNavigationBar(
           currentIndex: _bottomNavCurrentIndex,
           onTap: (idx) => setState(() => _selectedIndex = _bottomNavIndexMap[idx]),
           backgroundColor: AppColors.cardBg,
@@ -342,13 +342,13 @@ class _HomeViewState extends State<HomeView> {
           selectedFontSize: 11,
           unselectedFontSize: 11,
           type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.point_of_sale_rounded), label: 'POS'),
-            BottomNavigationBarItem(icon: Icon(Icons.inventory_2_rounded), label: 'Products'),
-            BottomNavigationBarItem(icon: Icon(Icons.people_alt_rounded), label: 'Customers'),
-            BottomNavigationBarItem(icon: Icon(Icons.bar_chart_rounded), label: 'Reports'),
+          items: [
+            BottomNavigationBarItem(icon: const Icon(Icons.point_of_sale_rounded), label: 'menu_pos'.tr),
+            BottomNavigationBarItem(icon: const Icon(Icons.inventory_2_rounded), label: 'menu_products'.tr),
+            BottomNavigationBarItem(icon: const Icon(Icons.people_alt_rounded), label: 'menu_customers'.tr),
+            BottomNavigationBarItem(icon: const Icon(Icons.bar_chart_rounded), label: 'menu_reports'.tr),
           ],
-        ),
+        )),
       );
     }
 
@@ -414,14 +414,14 @@ class _HomeViewState extends State<HomeView> {
                           color: isSelected ? AppColors.primaryLight : AppColors.textSecondary,
                           size: 20,
                         ),
-                        title: Text(
-                          item['title'] as String,
+                        title: Obx(() => Text(
+                          (item['title_key'] as String?)?.tr ?? (item['title'] as String),
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                             color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
                           ),
-                        ),
+                        )),
                         onTap: () => setState(() => _selectedIndex = index),
                       );
                     },

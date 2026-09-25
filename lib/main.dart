@@ -6,6 +6,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'app/bindings/initial_binding.dart';
 import 'app/routes/app_pages.dart';
+import 'app/translations/app_translations.dart';
 import 'app/utils/app_theme.dart';
 
 void main() async {
@@ -31,6 +32,9 @@ class SnapCartApp extends StatelessWidget {
       title: 'SnapCart POS',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
+      translations: AppTranslations(),
+      locale: const Locale('en', 'US'),
+      fallbackLocale: const Locale('en', 'US'),
       initialBinding: InitialBinding(),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
