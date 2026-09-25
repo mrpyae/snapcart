@@ -98,15 +98,16 @@ class PurchaseView extends StatelessWidget {
                     // Category selector
                     Obx(() => DropdownButtonFormField<String?>(
                       value: selectedCategoryId,
+                      isExpanded: true,
                       decoration: InputDecoration(
                         labelText: 'category'.tr,
                         isDense: true,
                       ),
                       items: [
-                        const DropdownMenuItem(value: null, child: Text('No Category (None)')),
+                        const DropdownMenuItem(value: null, child: Text('No Category (None)', overflow: TextOverflow.ellipsis)),
                         ...categoryController.categories.map((c) => DropdownMenuItem(
                           value: c.id,
-                          child: Text(c.name),
+                          child: Text(c.name, overflow: TextOverflow.ellipsis),
                         )),
                       ],
                       onChanged: (val) => setState(() => selectedCategoryId = val),
@@ -173,13 +174,14 @@ class PurchaseView extends StatelessWidget {
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: selectedUnit,
+                            isExpanded: true,
                             decoration: InputDecoration(labelText: 'unit'.tr, isDense: true),
                             items: [
-                              DropdownMenuItem(value: 'piece', child: Text('unit_piece'.tr)),
-                              DropdownMenuItem(value: 'set', child: Text('unit_set'.tr)),
-                              DropdownMenuItem(value: 'yard', child: Text('unit_yard'.tr)),
-                              DropdownMenuItem(value: 'roll', child: Text('unit_roll'.tr)),
-                              DropdownMenuItem(value: 'pack', child: Text('unit_pack'.tr)),
+                              DropdownMenuItem(value: 'piece', child: Text('unit_piece'.tr, overflow: TextOverflow.ellipsis)),
+                              DropdownMenuItem(value: 'set', child: Text('unit_set'.tr, overflow: TextOverflow.ellipsis)),
+                              DropdownMenuItem(value: 'yard', child: Text('unit_yard'.tr, overflow: TextOverflow.ellipsis)),
+                              DropdownMenuItem(value: 'roll', child: Text('unit_roll'.tr, overflow: TextOverflow.ellipsis)),
+                              DropdownMenuItem(value: 'pack', child: Text('unit_pack'.tr, overflow: TextOverflow.ellipsis)),
                             ],
                             onChanged: (val) => setState(() => selectedUnit = val ?? 'piece'),
                           ),
@@ -475,16 +477,17 @@ class PurchaseView extends StatelessWidget {
 
                                   return DropdownButtonFormField<String?>(
                                     value: dropdownValue,
+                                    isExpanded: true,
                                     decoration: InputDecoration(
                                       labelText: '${'select_supplier'.tr} *',
                                       prefixIcon: const Icon(Icons.business_rounded, size: 18, color: AppColors.primaryLight),
                                       isDense: true,
                                     ),
                                     items: [
-                                      const DropdownMenuItem<String?>(value: null, child: Text('General Cash Supplier (None)')),
+                                      const DropdownMenuItem<String?>(value: null, child: Text('General Cash Supplier (None)', overflow: TextOverflow.ellipsis)),
                                       ...supplierController.suppliers.map((s) => DropdownMenuItem<String?>(
                                         value: s.id,
-                                        child: Text('${s.name} ${s.companyName != null ? "(${s.companyName})" : ""}'),
+                                        child: Text('${s.name} ${s.companyName != null ? "(${s.companyName})" : ""}', overflow: TextOverflow.ellipsis),
                                       )),
                                     ],
                                     onChanged: (val) {
@@ -1050,11 +1053,13 @@ class PurchaseView extends StatelessWidget {
                                     Expanded(
                                       child: Obx(() => DropdownButtonFormField<String>(
                                         value: controller.paymentMethod.value,
-                                        decoration: const InputDecoration(labelText: 'Payment Method'),
-                                        items: const [
-                                          DropdownMenuItem(value: 'cash', child: Text('Cash')),
-                                          DropdownMenuItem(value: 'kpay', child: Text('KPay / Mobile')),
-                                          DropdownMenuItem(value: 'bank', child: Text('Bank Transfer')),
+                                        isExpanded: true,
+                                        decoration: InputDecoration(labelText: 'payment_method'.tr, isDense: true),
+                                        items: [
+                                          DropdownMenuItem(value: 'cash', child: Text('payment_cash'.tr, overflow: TextOverflow.ellipsis)),
+                                          DropdownMenuItem(value: 'kpay', child: Text('payment_kpay'.tr, overflow: TextOverflow.ellipsis)),
+                                          DropdownMenuItem(value: 'wave', child: Text('payment_wave'.tr, overflow: TextOverflow.ellipsis)),
+                                          DropdownMenuItem(value: 'bank', child: Text('payment_bank'.tr, overflow: TextOverflow.ellipsis)),
                                         ],
                                         onChanged: (val) => controller.paymentMethod.value = val ?? 'cash',
                                       )),
@@ -1306,11 +1311,13 @@ class PurchaseView extends StatelessWidget {
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   value: paymentMethod,
-                                  decoration: const InputDecoration(labelText: 'Payment Method', isDense: true),
-                                  items: const [
-                                    DropdownMenuItem(value: 'cash', child: Text('Cash')),
-                                    DropdownMenuItem(value: 'kpay', child: Text('KPay / Mobile')),
-                                    DropdownMenuItem(value: 'bank', child: Text('Bank Transfer')),
+                                  isExpanded: true,
+                                  decoration: InputDecoration(labelText: 'payment_method'.tr, isDense: true),
+                                  items: [
+                                    DropdownMenuItem(value: 'cash', child: Text('payment_cash'.tr, overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'kpay', child: Text('payment_kpay'.tr, overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'wave', child: Text('payment_wave'.tr, overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'bank', child: Text('payment_bank'.tr, overflow: TextOverflow.ellipsis)),
                                   ],
                                   onChanged: (val) => setState(() => paymentMethod = val ?? 'cash'),
                                 ),
@@ -1974,12 +1981,13 @@ class PurchaseView extends StatelessWidget {
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   value: paymentMethod,
+                                  isExpanded: true,
                                   decoration: InputDecoration(labelText: 'payment_method'.tr, isDense: true),
                                   items: [
-                                    DropdownMenuItem(value: 'cash', child: Text('payment_cash'.tr)),
-                                    DropdownMenuItem(value: 'kpay', child: Text('payment_kpay'.tr)),
-                                    DropdownMenuItem(value: 'wave', child: Text('payment_wave'.tr)),
-                                    DropdownMenuItem(value: 'bank', child: Text('payment_bank'.tr)),
+                                    DropdownMenuItem(value: 'cash', child: Text('payment_cash'.tr, overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'kpay', child: Text('payment_kpay'.tr, overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'wave', child: Text('payment_wave'.tr, overflow: TextOverflow.ellipsis)),
+                                    DropdownMenuItem(value: 'bank', child: Text('payment_bank'.tr, overflow: TextOverflow.ellipsis)),
                                   ],
                                   onChanged: (val) {
                                     if (val != null) setState(() => paymentMethod = val);
