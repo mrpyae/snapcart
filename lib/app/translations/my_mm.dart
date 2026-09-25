@@ -214,6 +214,13 @@ const Map<String, String> myMM = {
   'status_overdue': 'ရက်လွန်',
   'status_partially_received': 'တစ်စိတ်တစ်ပိုင်းရရှိ',
   'status_received': 'စတော့ဝင်ပြီး',
+  'edit_purchase_order': 'ဝယ်ယူမှု / မှာယူမှု ပြင်ဆင်ရန်',
+  'delete_purchase_order': 'ဝယ်ယူမှု / မှာယူမှု ဖျက်ရန်',
+  'delete_purchase_confirm': 'ဤဝယ်ယူမှု / မှာယူမှုကို ဖျက်ရန် သေချာပါသလား?',
+  'delete_purchase_stock_warning': 'လက်ခံရရှိပြီးသော ပစ္စည်းစာရင်းကို ဖျက်ပါက သိုလှောင်ရုံလက်ကျန်စာရင်းမှ ပြန်လည်နှုတ်ပယ်ပြီး ပေးရန်ကျန်ကြွေးကျန်ကိုလည်း ပြန်လည်ညှိနှိုင်းပေးပါမည်။',
+  'delete_purchase_order_warning': 'ဤကုန်ပစ္စည်းမှာယူမှုမှတ်တမ်းကို လုံးဝဖျက်ပစ်ပါမည်။',
+  'order_updated_successfully': 'ဝယ်ယူမှု / မှာယူမှု အချက်အလက်များကို ပြင်ဆင်ပြီးပါပြီ',
+  'order_deleted_successfully': 'ဝယ်ယူမှု / မှာယူမှု မှတ်တမ်းကို ဖျက်ပြီးပါပြီ',
 
   // Customer Orders Specific
   'new_order': '+ အမှာစာသစ်',

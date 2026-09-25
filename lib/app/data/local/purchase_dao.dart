@@ -271,6 +271,131 @@ class PurchaseDao {
     });
   }
 
+  // Delete Purchase Order or Stock-In
+  Future<void> deletePurchaseOrder(String purchaseId) async {
+    final db = await dbHelper.database;
+    final nowStr = DateTime.now().toIso8601String();
+
+    await db.transaction((txn) async {
+      // 1. Fetch purchase record
+      final pRes = await txn.query('purchases', where: 'id = ?', whereArgs: [purchaseId]);
+      if (pRes.isEmpty) return;
+      final purchase = PurchaseModel.fromJson(pRes.first);
+
+      // 2. Fetch all items
+      final itemsRes = await txn.query('purchase_items', where: 'purchase_id = ?', whereArgs: [purchaseId]);
+      final items = itemsRes.map((i) => PurchaseItemModel.fromJson(i)).toList();
+
+      // 3. Rollback product inventory stock if any goods were received
+      for (var item in items) {
+        final double receivedQty = item.receivedQuantity > 0
+            ? item.receivedQuantity
+            : (purchase.status == 'RECEIVED' ? item.quantity : 0.0);
+
+        if (receivedQty > 0) {
+          await txn.rawUpdate(
+            'UPDATE products SET stock_qty = MAX(0.0, stock_qty - ?), sync_status = 0, updated_at = ? WHERE id = ?',
+            [receivedQty, nowStr, item.productId],
+          );
+        }
+      }
+
+      // 4. Rollback Supplier Payable Balance if due debt was recorded
+      if (purchase.status != 'ORDERED' && purchase.status != 'CANCELLED' && purchase.dueAmount > 0 && purchase.supplierId != null && purchase.supplierId!.isNotEmpty) {
+        await txn.rawUpdate(
+          'UPDATE suppliers SET payable_balance = MAX(0.0, payable_balance - ?), sync_status = 0, updated_at = ? WHERE id = ?',
+          [purchase.dueAmount, nowStr, purchase.supplierId],
+        );
+      }
+
+      // 5. Delete linked supplier payments for this purchase
+      await txn.delete('supplier_payments', where: 'purchase_id = ?', whereArgs: [purchaseId]);
+
+      // 6. Delete purchase items and purchase record
+      await txn.delete('purchase_items', where: 'purchase_id = ?', whereArgs: [purchaseId]);
+      await txn.delete('purchases', where: 'id = ?', whereArgs: [purchaseId]);
+    });
+  }
+
+  // Update Purchase Order or Stock-In
+  Future<void> updatePurchaseOrder({
+    required PurchaseModel updatedPurchase,
+    required List<PurchaseItemModel> updatedItems,
+  }) async {
+    final db = await dbHelper.database;
+    final nowStr = DateTime.now().toIso8601String();
+
+    await db.transaction((txn) async {
+      // 1. Fetch old purchase and items
+      final pRes = await txn.query('purchases', where: 'id = ?', whereArgs: [updatedPurchase.id]);
+      if (pRes.isEmpty) return;
+      final oldPurchase = PurchaseModel.fromJson(pRes.first);
+
+      final oldItemsRes = await txn.query('purchase_items', where: 'purchase_id = ?', whereArgs: [updatedPurchase.id]);
+      final oldItems = oldItemsRes.map((i) => PurchaseItemModel.fromJson(i)).toList();
+
+      // 2. Revert inventory stock from old received items
+      for (var oldItem in oldItems) {
+        final double oldRecQty = oldItem.receivedQuantity > 0
+            ? oldItem.receivedQuantity
+            : (oldPurchase.status == 'RECEIVED' ? oldItem.quantity : 0.0);
+
+        if (oldRecQty > 0) {
+          await txn.rawUpdate(
+            'UPDATE products SET stock_qty = MAX(0.0, stock_qty - ?), sync_status = 0, updated_at = ? WHERE id = ?',
+            [oldRecQty, nowStr, oldItem.productId],
+          );
+        }
+      }
+
+      // 3. Apply new inventory stock for new received items
+      final isNewDirect = updatedPurchase.status == 'RECEIVED';
+      for (var newItem in updatedItems) {
+        final double newRecQty = newItem.receivedQuantity > 0
+            ? newItem.receivedQuantity
+            : (isNewDirect ? newItem.quantity : 0.0);
+
+        if (newRecQty > 0) {
+          await txn.rawUpdate(
+            'UPDATE products SET stock_qty = stock_qty + ?, cost_price = ?, sync_status = 0, updated_at = ? WHERE id = ?',
+            [newRecQty, newItem.costPrice, nowStr, newItem.productId],
+          );
+        }
+      }
+
+      // 4. Adjust supplier payable balance:
+      // Revert old due from old supplier if it was applied
+      if (oldPurchase.status != 'ORDERED' && oldPurchase.status != 'CANCELLED' && oldPurchase.dueAmount > 0 && oldPurchase.supplierId != null && oldPurchase.supplierId!.isNotEmpty) {
+        await txn.rawUpdate(
+          'UPDATE suppliers SET payable_balance = MAX(0.0, payable_balance - ?), sync_status = 0, updated_at = ? WHERE id = ?',
+          [oldPurchase.dueAmount, nowStr, oldPurchase.supplierId],
+        );
+      }
+
+      // Apply new due to new supplier if applicable
+      if (updatedPurchase.status != 'ORDERED' && updatedPurchase.status != 'CANCELLED' && updatedPurchase.dueAmount > 0 && updatedPurchase.supplierId != null && updatedPurchase.supplierId!.isNotEmpty) {
+        await txn.rawUpdate(
+          'UPDATE suppliers SET payable_balance = payable_balance + ?, sync_status = 0, updated_at = ? WHERE id = ?',
+          [updatedPurchase.dueAmount, nowStr, updatedPurchase.supplierId],
+        );
+      }
+
+      // 5. Replace items in purchase_items
+      await txn.delete('purchase_items', where: 'purchase_id = ?', whereArgs: [updatedPurchase.id]);
+      for (var item in updatedItems) {
+        final itemMap = item.toMap();
+        itemMap['purchase_id'] = updatedPurchase.id;
+        await txn.insert('purchase_items', itemMap, conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+
+      // 6. Update purchases table
+      final pMap = updatedPurchase.toMap();
+      pMap['updated_at'] = nowStr;
+      pMap['sync_status'] = 0;
+      await txn.update('purchases', pMap, where: 'id = ?', whereArgs: [updatedPurchase.id]);
+    });
+  }
+
   Future<List<PurchaseModel>> getPurchases({
     String query = '',
     String? supplierId,

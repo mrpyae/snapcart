@@ -332,4 +332,87 @@ class PurchaseController extends GetxController {
       return false;
     }
   }
+
+  // Delete Purchase Order or Stock-In
+  Future<bool> deletePurchaseOrder(PurchaseModel purchase) async {
+    try {
+      await purchaseDao.deletePurchaseOrder(purchase.id);
+
+      // Refresh product lists & POS stock counts
+      if (Get.isRegistered<ProductController>()) {
+        Get.find<ProductController>().loadProducts();
+      }
+      if (Get.isRegistered<POSController>()) {
+        Get.find<POSController>().loadProducts();
+      }
+      if (Get.isRegistered<SupplierController>()) {
+        Get.find<SupplierController>().loadSuppliers();
+      }
+
+      await loadPurchases();
+      appController.triggerAutoSync();
+
+      Get.snackbar(
+        'delete_purchase_order'.tr,
+        'order_deleted_successfully'.tr,
+        backgroundColor: Colors.grey.shade800,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to delete order: $e',
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      return false;
+    }
+  }
+
+  // Update Purchase Order or Stock-In
+  Future<bool> updatePurchaseOrder({
+    required PurchaseModel updatedPurchase,
+    required List<PurchaseItemModel> updatedItems,
+  }) async {
+    try {
+      await purchaseDao.updatePurchaseOrder(
+        updatedPurchase: updatedPurchase,
+        updatedItems: updatedItems,
+      );
+
+      // Refresh product lists & POS stock counts
+      if (Get.isRegistered<ProductController>()) {
+        Get.find<ProductController>().loadProducts();
+      }
+      if (Get.isRegistered<POSController>()) {
+        Get.find<POSController>().loadProducts();
+      }
+      if (Get.isRegistered<SupplierController>()) {
+        Get.find<SupplierController>().loadSuppliers();
+      }
+
+      await loadPurchases();
+      appController.triggerAutoSync();
+
+      Get.snackbar(
+        'edit_purchase_order'.tr,
+        'order_updated_successfully'.tr,
+        backgroundColor: AppColors.primary,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to update order: $e',
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      return false;
+    }
+  }
 }
+

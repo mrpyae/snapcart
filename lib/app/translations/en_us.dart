@@ -214,6 +214,13 @@ const Map<String, String> enUS = {
   'status_overdue': 'Overdue',
   'status_partially_received': 'Partially Received',
   'status_received': 'Stock In Done',
+  'edit_purchase_order': 'Edit Purchase / Supplier Order',
+  'delete_purchase_order': 'Delete Purchase / Supplier Order',
+  'delete_purchase_confirm': 'Are you sure you want to delete this purchase order?',
+  'delete_purchase_stock_warning': 'Deleting a received stock-in will deduct received quantities from inventory stock and reverse any supplier debt.',
+  'delete_purchase_order_warning': 'This will permanently remove this supplier order.',
+  'order_updated_successfully': 'Purchase / Supplier order updated successfully',
+  'order_deleted_successfully': 'Purchase / Supplier order deleted successfully',
 
   // Customer Orders Specific
   'new_order': '+ New Order',

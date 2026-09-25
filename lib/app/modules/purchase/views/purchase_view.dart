@@ -10,6 +10,8 @@ import '../../categories/controllers/category_controller.dart';
 import '../../products/controllers/product_controller.dart';
 import '../../suppliers/controllers/supplier_controller.dart';
 import '../controllers/purchase_controller.dart';
+import 'package:uuid/uuid.dart';
+import '../../../utils/owner_auth_helper.dart';
 
 class PurchaseView extends StatelessWidget {
   const PurchaseView({Key? key}) : super(key: key);
@@ -1536,7 +1538,606 @@ class PurchaseView extends StatelessWidget {
     );
   }
 
-  void _showPurchaseDetailsModal(BuildContext context, PurchaseModel purchase) {
+  void _confirmAndDeletePurchase(
+    BuildContext context,
+    PurchaseController controller,
+    PurchaseModel purchase,
+  ) {
+    final isReceived = purchase.status == 'RECEIVED' || purchase.status == 'PARTIALLY_RECEIVED';
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: AppColors.cardBg,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 24),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                '${'delete_purchase_order'.tr} (${purchase.invoiceNo})',
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'delete_purchase_confirm'.tr,
+              style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.cardBgLight,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isReceived
+                        ? '• ${'delete_purchase_stock_warning'.tr}'
+                        : '• ${'delete_purchase_order_warning'.tr}',
+                    style: const TextStyle(fontSize: 11.5, color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${'supplier'.tr}: ${purchase.supplierName ?? "General Supplier"}',
+                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  ),
+                  Text(
+                    '${'total'.tr}: ${Formatters.formatCurrency(purchase.totalAmount)} (${purchase.items.length} ${'items'.tr})',
+                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.secondary),
+                  ),
+                  if (purchase.dueAmount > 0) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      '${'due'.tr}: ${Formatters.formatCurrency(purchase.dueAmount)}',
+                      style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.error),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('cancel'.tr),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () async {
+              Get.back();
+              await controller.deletePurchaseOrder(purchase);
+            },
+            child: Text('delete'.tr),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditPurchaseDialog(
+    BuildContext context,
+    PurchaseController controller,
+    PurchaseModel purchase,
+  ) {
+    final SupplierController supplierController = Get.isRegistered<SupplierController>()
+        ? Get.find<SupplierController>()
+        : Get.put(SupplierController());
+    final ProductController productController = Get.isRegistered<ProductController>()
+        ? Get.find<ProductController>()
+        : Get.put(ProductController());
+
+    final invoiceNoCtrl = TextEditingController(text: purchase.invoiceNo);
+    final notesCtrl = TextEditingController(text: purchase.notes ?? '');
+    final paidCtrl = TextEditingController(
+      text: purchase.paidAmount > 0
+          ? (purchase.paidAmount % 1 == 0 ? purchase.paidAmount.toInt().toString() : purchase.paidAmount.toString())
+          : '0',
+    );
+    final expectedDateCtrl = TextEditingController(text: purchase.expectedDeliveryDate ?? '');
+
+    String? selectedSupplierId = purchase.supplierId;
+    String? selectedSupplierName = purchase.supplierName;
+    String paymentMethod = purchase.paymentMethod;
+    final String status = purchase.status;
+
+    final List<_EditPurchaseItem> editItems = purchase.items.map((i) => _EditPurchaseItem(
+      id: i.id,
+      productId: i.productId,
+      productName: i.productName,
+      unit: i.unit,
+      costPrice: i.costPrice,
+      quantity: purchase.status == 'ORDERED' ? i.orderedQuantity : (i.receivedQuantity > 0 ? i.receivedQuantity : i.quantity),
+      orderedQuantity: i.orderedQuantity,
+      receivedQuantity: i.receivedQuantity,
+      rejectedQuantity: i.rejectedQuantity,
+      status: i.status,
+    )).toList();
+
+    Get.dialog(
+      Dialog(
+        backgroundColor: AppColors.cardBg,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: StatefulBuilder(
+          builder: (ctx, setState) {
+            final screenWidth = MediaQuery.of(ctx).size.width;
+            final isMobile = screenWidth < 560;
+
+            final totalAmount = editItems.fold(0.0, (sum, i) => sum + i.subtotal);
+            final paidAmount = double.tryParse(paidCtrl.text.replaceAll(',', '')) ?? 0.0;
+            final dueAmount = totalAmount > paidAmount ? (totalAmount - paidAmount) : 0.0;
+
+            return Container(
+              width: isMobile ? screenWidth * 0.95 : 620,
+              constraints: const BoxConstraints(maxWidth: 620, maxHeight: 720),
+              padding: EdgeInsets.all(isMobile ? 14 : 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Dialog Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.18),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.edit_note_rounded, size: 22, color: AppColors.primaryLight),
+                          ),
+                          const SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'edit_purchase_order'.tr,
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                              ),
+                              Text(
+                                '${purchase.invoiceNo} • ${purchase.statusLabel}',
+                                style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, size: 20, color: AppColors.textSecondary),
+                        onPressed: () => Get.back(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Divider(height: 1),
+                  const SizedBox(height: 10),
+
+                  // Scrollable Body
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Supplier & Invoice No Row
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Obx(() => DropdownButtonFormField<String?>(
+                                  value: selectedSupplierId,
+                                  isExpanded: true,
+                                  decoration: InputDecoration(
+                                    labelText: 'supplier'.tr,
+                                    prefixIcon: const Icon(Icons.local_shipping_outlined, size: 18, color: AppColors.primaryLight),
+                                    isDense: true,
+                                  ),
+                                  items: [
+                                    const DropdownMenuItem<String?>(
+                                      value: null,
+                                      child: Text('General Supplier', style: TextStyle(fontSize: 12)),
+                                    ),
+                                    ...supplierController.suppliers.map((s) => DropdownMenuItem<String?>(
+                                      value: s.id,
+                                      child: Text(s.name, style: const TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis),
+                                    )),
+                                  ],
+                                  onChanged: (val) {
+                                    setState(() {
+                                      selectedSupplierId = val;
+                                      if (val == null) {
+                                        selectedSupplierName = 'General Supplier';
+                                      } else {
+                                        final found = supplierController.suppliers.firstWhereOrNull((s) => s.id == val);
+                                        selectedSupplierName = found?.name ?? 'General Supplier';
+                                      }
+                                    });
+                                  },
+                                )),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                flex: 2,
+                                child: TextField(
+                                  controller: invoiceNoCtrl,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Invoice No',
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          // If status == 'ORDERED' or 'PARTIALLY_RECEIVED', show Expected Delivery Date
+                          if (status == 'ORDERED' || status == 'PARTIALLY_RECEIVED') ...[
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: expectedDateCtrl,
+                                    readOnly: true,
+                                    onTap: () async {
+                                      final picked = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now().add(const Duration(days: 3)),
+                                        firstDate: DateTime.now().subtract(const Duration(days: 60)),
+                                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                                      );
+                                      if (picked != null) {
+                                        setState(() {
+                                          expectedDateCtrl.text = DateFormat('yyyy-MM-dd').format(picked);
+                                        });
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      labelText: 'expected_delivery'.tr,
+                                      prefixIcon: const Icon(Icons.calendar_month_rounded, size: 18, color: Colors.blue),
+                                      isDense: true,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+
+                          // Items Header
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${'ordered_fabrics'.tr} (${editItems.length})',
+                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                              ),
+                              // Dropdown to add more products to this order
+                              Obx(() {
+                                final products = productController.products;
+                                return SizedBox(
+                                  width: 170,
+                                  child: DropdownButtonFormField<String?>(
+                                    value: null,
+                                    isExpanded: true,
+                                    decoration: const InputDecoration(
+                                      hintText: '+ Add Product',
+                                      hintStyle: TextStyle(fontSize: 11, color: AppColors.primary),
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                    ),
+                                    items: [
+                                      const DropdownMenuItem<String?>(
+                                        value: null,
+                                        child: Text('+ Add Product', style: TextStyle(fontSize: 11)),
+                                      ),
+                                      ...products.map((p) => DropdownMenuItem<String?>(
+                                        value: p.id,
+                                        child: Text(p.name, style: const TextStyle(fontSize: 11), overflow: TextOverflow.ellipsis),
+                                      )),
+                                    ],
+                                    onChanged: (prodId) {
+                                      if (prodId != null) {
+                                        final prod = products.firstWhereOrNull((p) => p.id == prodId);
+                                        if (prod != null) {
+                                          setState(() {
+                                            editItems.add(_EditPurchaseItem(
+                                              id: const Uuid().v4(),
+                                              productId: prod.id,
+                                              productName: prod.name,
+                                              unit: prod.unit,
+                                              costPrice: prod.costPrice > 0 ? prod.costPrice : prod.retailPrice * 0.7,
+                                              quantity: 1.0,
+                                              orderedQuantity: 1.0,
+                                              receivedQuantity: status == 'RECEIVED' ? 1.0 : 0.0,
+                                              rejectedQuantity: 0.0,
+                                              status: status == 'RECEIVED' ? 'RECEIVED' : 'ORDERED',
+                                            ));
+                                          });
+                                        }
+                                      }
+                                    },
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+
+                          // List of editable items
+                          ...editItems.asMap().entries.map((entry) {
+                            final idx = entry.key;
+                            final item = entry.value;
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: AppColors.cardBgLight,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: AppColors.border),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          '${idx + 1}. ${item.productName}',
+                                          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      if (editItems.length > 1)
+                                        IconButton(
+                                          icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          onPressed: () {
+                                            setState(() {
+                                              editItems.removeAt(idx);
+                                            });
+                                          },
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      // Quantity Field
+                                      Expanded(
+                                        flex: 2,
+                                        child: TextField(
+                                          controller: item.qtyCtrl,
+                                          keyboardType: TextInputType.number,
+                                          onChanged: (_) => setState(() {}),
+                                          decoration: InputDecoration(
+                                            labelText: '${'qty'.tr} (${item.unit})',
+                                            isDense: true,
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      // Cost Price Field
+                                      Expanded(
+                                        flex: 3,
+                                        child: TextField(
+                                          controller: item.costCtrl,
+                                          keyboardType: TextInputType.number,
+                                          onChanged: (_) => setState(() {}),
+                                          decoration: InputDecoration(
+                                            labelText: 'cost_price'.tr,
+                                            isDense: true,
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      // Subtotal
+                                      Expanded(
+                                        flex: 3,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            const Text('Subtotal', style: TextStyle(fontSize: 10, color: AppColors.textMuted)),
+                                            Text(
+                                              Formatters.formatCurrency(item.subtotal),
+                                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.secondary),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          const SizedBox(height: 10),
+
+                          // Payment Method & Paid Amount
+                          Row(
+                            children: [
+                              Expanded(
+                                child: DropdownButtonFormField<String>(
+                                  value: paymentMethod,
+                                  decoration: InputDecoration(labelText: 'payment_method'.tr, isDense: true),
+                                  items: [
+                                    DropdownMenuItem(value: 'cash', child: Text('payment_cash'.tr)),
+                                    DropdownMenuItem(value: 'kpay', child: Text('payment_kpay'.tr)),
+                                    DropdownMenuItem(value: 'wave', child: Text('payment_wave'.tr)),
+                                    DropdownMenuItem(value: 'bank', child: Text('payment_bank'.tr)),
+                                  ],
+                                  onChanged: (val) {
+                                    if (val != null) setState(() => paymentMethod = val);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: TextField(
+                                  controller: paidCtrl,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (_) => setState(() {}),
+                                  decoration: InputDecoration(
+                                    labelText: 'paid_advance_paid'.tr,
+                                    isDense: true,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          // Notes Field
+                          TextField(
+                            controller: notesCtrl,
+                            decoration: InputDecoration(
+                              labelText: 'notes'.tr,
+                              hintText: 'e.g. Order remarks, delivery terms',
+                              isDense: true,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Live Financial Calculation Summary
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.cardBgLight,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Total Amount:', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                                    Text(Formatters.formatCurrency(totalAmount),
+                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.secondary)),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Paid Amount:', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                                    Text(Formatters.formatCurrency(paidAmount),
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.success)),
+                                  ],
+                                ),
+                                const Divider(height: 12),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Due Balance (Payable):', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.error)),
+                                    Text(Formatters.formatCurrency(dueAmount),
+                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 10),
+
+                  // Bottom Action Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: Text('cancel'.tr),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        ),
+                        onPressed: () async {
+                          if (editItems.isEmpty) {
+                            Get.snackbar('Error', 'Order must have at least one product item');
+                            return;
+                          }
+
+                          final updatedItems = editItems.map((e) {
+                            final isDirect = status == 'RECEIVED';
+                            return PurchaseItemModel(
+                              id: e.id,
+                              purchaseId: purchase.id,
+                              productId: e.productId,
+                              productName: e.productName,
+                              unit: e.unit,
+                              costPrice: e.costPrice,
+                              quantity: isDirect ? e.quantity : e.receivedQuantity,
+                              orderedQuantity: e.quantity,
+                              receivedQuantity: isDirect ? e.quantity : e.receivedQuantity,
+                              rejectedQuantity: e.rejectedQuantity,
+                              subtotal: e.subtotal,
+                              status: isDirect ? 'RECEIVED' : e.status,
+                              syncStatus: 0,
+                            );
+                          }).toList();
+
+                          final updatedPurchase = purchase.copyWith(
+                            invoiceNo: invoiceNoCtrl.text.trim().isNotEmpty ? invoiceNoCtrl.text.trim() : purchase.invoiceNo,
+                            supplierId: selectedSupplierId,
+                            supplierName: selectedSupplierName,
+                            totalAmount: totalAmount,
+                            paidAmount: paidAmount,
+                            dueAmount: dueAmount,
+                            paymentMethod: paymentMethod,
+                            status: status,
+                            expectedDeliveryDate: expectedDateCtrl.text.trim().isNotEmpty ? expectedDateCtrl.text.trim() : null,
+                            notes: notesCtrl.text.trim().isNotEmpty ? notesCtrl.text.trim() : null,
+                            items: updatedItems,
+                          );
+
+                          Get.back();
+                          await controller.updatePurchaseOrder(
+                            updatedPurchase: updatedPurchase,
+                            updatedItems: updatedItems,
+                          );
+                        },
+                        icon: const Icon(Icons.check_rounded, size: 16),
+                        label: Text('save'.tr),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showPurchaseDetailsModal(BuildContext context, PurchaseModel purchase, [PurchaseController? ctrl]) {
+    final PurchaseController controller = ctrl ?? (Get.isRegistered<PurchaseController>()
+        ? Get.find<PurchaseController>()
+        : Get.put(PurchaseController()));
     final screenWidth = MediaQuery.of(context).size.width;
     Get.dialog(
       Dialog(
@@ -1616,6 +2217,47 @@ class PurchaseView extends StatelessWidget {
                   ],
                 ),
               ],
+              const SizedBox(height: 10),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Get.back();
+                      OwnerAuthHelper.requireOwnerAccess(
+                        context,
+                        actionName: 'Delete ${purchase.invoiceNo}',
+                        subtitle: 'Authorizing will delete this purchase record and rollback inventory stock.',
+                        onAuthorized: () => _confirmAndDeletePurchase(context, controller, purchase),
+                      );
+                    },
+                    icon: const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.error),
+                    label: Text('delete'.tr, style: const TextStyle(fontSize: 12, color: AppColors.error)),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppColors.error, width: 0.8),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Get.back();
+                      OwnerAuthHelper.requireOwnerAccess(
+                        context,
+                        actionName: 'Edit ${purchase.invoiceNo}',
+                        subtitle: 'Authorizing will allow editing purchase quantities, prices and supplier.',
+                        onAuthorized: () => _showEditPurchaseDialog(context, controller, purchase),
+                      );
+                    },
+                    icon: const Icon(Icons.edit_outlined, size: 16),
+                    label: Text('edit'.tr, style: const TextStyle(fontSize: 12)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -2015,10 +2657,34 @@ class PurchaseView extends StatelessWidget {
                                         ),
                                       ),
                                     ],
-                                    const SizedBox(width: 6),
+                                    const SizedBox(width: 4),
+                                    IconButton(
+                                      icon: const Icon(Icons.edit_outlined, size: 18, color: AppColors.primary),
+                                      onPressed: () {
+                                        OwnerAuthHelper.requireOwnerAccess(
+                                          context,
+                                          actionName: 'Edit ${p.invoiceNo}',
+                                          subtitle: 'Authorizing will allow editing purchase quantities, prices and supplier.',
+                                          onAuthorized: () => _showEditPurchaseDialog(context, controller, p),
+                                        );
+                                      },
+                                      tooltip: 'edit_purchase_order'.tr,
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
+                                      onPressed: () {
+                                        OwnerAuthHelper.requireOwnerAccess(
+                                          context,
+                                          actionName: 'Delete ${p.invoiceNo}',
+                                          subtitle: 'Authorizing will delete this purchase record and rollback inventory stock.',
+                                          onAuthorized: () => _confirmAndDeletePurchase(context, controller, p),
+                                        );
+                                      },
+                                      tooltip: 'delete_purchase_order'.tr,
+                                    ),
                                     IconButton(
                                       icon: const Icon(Icons.visibility_outlined, size: 18, color: AppColors.textSecondary),
-                                      onPressed: () => _showPurchaseDetailsModal(context, p),
+                                      onPressed: () => _showPurchaseDetailsModal(context, p, controller),
                                       tooltip: 'View Details',
                                     ),
                                   ],
@@ -2067,3 +2733,35 @@ class PurchaseView extends StatelessWidget {
     );
   }
 }
+
+class _EditPurchaseItem {
+  final String id;
+  final String productId;
+  final String productName;
+  final String unit;
+  final TextEditingController costCtrl;
+  final TextEditingController qtyCtrl;
+  final double orderedQuantity;
+  final double receivedQuantity;
+  final double rejectedQuantity;
+  final String status;
+
+  _EditPurchaseItem({
+    required this.id,
+    required this.productId,
+    required this.productName,
+    required this.unit,
+    required double costPrice,
+    required double quantity,
+    required this.orderedQuantity,
+    required this.receivedQuantity,
+    required this.rejectedQuantity,
+    required this.status,
+  })  : costCtrl = TextEditingController(text: costPrice > 0 ? (costPrice % 1 == 0 ? costPrice.toInt().toString() : costPrice.toString()) : '0'),
+        qtyCtrl = TextEditingController(text: quantity > 0 ? (quantity % 1 == 0 ? quantity.toInt().toString() : quantity.toString()) : '1');
+
+  double get costPrice => double.tryParse(costCtrl.text.replaceAll(',', '')) ?? 0.0;
+  double get quantity => double.tryParse(qtyCtrl.text.replaceAll(',', '')) ?? 0.0;
+  double get subtotal => costPrice * quantity;
+}
+
