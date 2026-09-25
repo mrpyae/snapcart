@@ -7,6 +7,7 @@ import '../../../Controller/AppController.dart';
 import '../../auth/views/account_selection_dialog.dart';
 import 'data_cleanup_dialog.dart';
 import 'bluetooth_printer_dialog.dart';
+import 'backup_restore_dialog.dart';
 import '../../../utils/bluetooth_printer_service.dart';
 
 class SettingsView extends StatelessWidget {
@@ -402,6 +403,69 @@ class SettingsView extends StatelessWidget {
 
             // Thermal Bluetooth Printer Card
             _BluetoothPrinterCard(isMobile: isMobile),
+            const SizedBox(height: 16),
+
+            // SQLite Database Backup & Restore Card
+            Container(
+              padding: EdgeInsets.all(isMobile ? 14 : 20),
+              decoration: BoxDecoration(
+                color: AppColors.cardBg,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.primary.withOpacity(0.35)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.settings_backup_restore_rounded, color: AppColors.primaryLight, size: 22),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'SQLite Database Backup & Restore',
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Atomic database snapshots, export to storage & safety restore',
+                              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Create local or external backup files (.db) of your entire POS data, or restore an earlier backup with pre-flight integrity inspection and automatic rollback protection.',
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => Get.dialog(const BackupRestoreDialog()),
+                      icon: const Icon(Icons.cloud_sync_rounded, size: 18),
+                      label: const Text('Open Backup & Restore Hub'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
 
             // Danger Zone / Data Management Card

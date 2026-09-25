@@ -52,6 +52,7 @@ dependencies:
   printing: ^5.12.0
   rabbit_converter: ^2.0.0
   print_bluetooth_thermal: ^1.1.1
+  file_picker: ^8.0.0+1
 
 dev_dependencies:
   flutter_test:

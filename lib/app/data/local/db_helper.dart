@@ -46,6 +46,54 @@ class DBHelper {
     }
   }
 
+  /// Resolve the absolute filesystem path to the active SQLite database
+  Future<String> getDatabasePath([String filePath = 'snapcart_pos.db']) async {
+    if (kIsWeb) return filePath;
+    try {
+      final db = await database;
+      if (db.path.isNotEmpty) return db.path;
+    } catch (_) {}
+
+    try {
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        final docDir = await getApplicationDocumentsDirectory();
+        return join(docDir.path, 'SnapCart', filePath);
+      } else {
+        final dbPath = await getDatabasesPath();
+        return join(dbPath, filePath);
+      }
+    } catch (_) {
+      return filePath;
+    }
+  }
+
+  /// Flushes in-flight Write-Ahead Log (WAL) to main .db file
+  Future<void> flushWal() async {
+    try {
+      if (!kIsWeb) {
+        final db = await database;
+        await db.rawQuery('PRAGMA wal_checkpoint(FULL);');
+      }
+    } catch (_) {}
+  }
+
+  /// Safely closes the database connection and resets the singleton instance
+  Future<void> closeDatabase() async {
+    if (_database != null) {
+      try {
+        await _database!.close();
+      } catch (_) {}
+      _database = null;
+    }
+    _dbOpenCompleter = null;
+  }
+
+  /// Reopens the database connection and runs schema migration
+  Future<Database> reopenDatabase() async {
+    await closeDatabase();
+    return await database;
+  }
+
   Future<Database> _initDB(String filePath) async {
     _ensureFactoryInit();
 
