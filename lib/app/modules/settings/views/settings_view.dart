@@ -9,6 +9,8 @@ import 'data_cleanup_dialog.dart';
 import 'bluetooth_printer_dialog.dart';
 import 'backup_restore_dialog.dart';
 import '../../../utils/bluetooth_printer_service.dart';
+import '../../../utils/owner_auth_helper.dart';
+import 'change_password_dialog.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({Key? key}) : super(key: key);
@@ -83,6 +85,28 @@ class SettingsView extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                       ],
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            OwnerAuthHelper.requireOwnerAccess(
+                              context,
+                              actionName: 'Change Password & Passcode',
+                              subtitle: 'Enter Owner Passcode to manage user passwords.',
+                              onAuthorized: () {
+                                Get.dialog(const ChangePasswordDialog());
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.password_rounded, size: 16, color: Colors.amber),
+                          label: const Text('Change Password & Passcode (Owner)', style: TextStyle(color: Colors.amber)),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.amber),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(

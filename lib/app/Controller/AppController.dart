@@ -236,6 +236,39 @@ class AppController extends GetxController {
     }
   }
 
+  /// Change user password and/or passcode (Owner action)
+  Future<bool> changeUserPasswordAndPasscode({
+    required String userId,
+    required String accountId,
+    required String newPassword,
+    required String newPasscode,
+  }) async {
+    try {
+      if (newPassword.isNotEmpty) {
+        await authRepository.userDao.updateUserPassword(userId, newPassword);
+      }
+      if (newPasscode.isNotEmpty) {
+        await authRepository.userDao.updateUserAccountPasscode(accountId, newPasscode);
+      }
+
+      // If updating currently logged in user/account, refresh current session in memory
+      if (currentUser.value?.id == userId) {
+        final updatedUser = await authRepository.userDao.getOfflineUserById(userId);
+        if (updatedUser != null) {
+          currentUser.value = updatedUser;
+          if (currentAccount.value?.id == accountId) {
+            currentAccount.value = updatedUser.accounts.firstWhereOrNull((a) => a.id == accountId) ?? currentAccount.value;
+          }
+        }
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint('Error changing user password/passcode: $e');
+      return false;
+    }
+  }
+
   // Switch Active Account / Branch Profile
   void selectAccount(UserAccountModel account) {
     currentAccount.value = account;

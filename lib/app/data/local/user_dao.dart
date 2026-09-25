@@ -84,16 +84,71 @@ class UserDao {
     );
     if (res.isNotEmpty) {
       final storedHash = res.first['password_hash']?.toString() ?? '';
-      // Support plain comparison, common defaults, or bcrypt hash prefix
-      if (storedHash == rawPassword || storedHash == '123456' || storedHash == 'password') {
+      // Direct plain text comparison (unencrypted):
+      if (storedHash == rawPassword.trim()) {
         return true;
       }
-      // If stored as bcrypt and testing with default passwords
-      if (rawPassword == '123456' || rawPassword == 'password' || storedHash.isNotEmpty) {
-        return true;
+      // Backwards-compatibility for initial seeded default passwords:
+      if (storedHash == '123456' || storedHash == 'password') {
+        if (rawPassword.trim() == '123456' || rawPassword.trim() == 'password') {
+          return true;
+        }
       }
     }
     return false;
+  }
+
+  /// Update user login password in plain text (unencrypted)
+  Future<void> updateUserPassword(String userId, String plainPassword) async {
+    final db = await dbHelper.database;
+    await db.update(
+      'users',
+      {
+        'password_hash': plainPassword.trim(),
+        'sync_status': 0,
+      },
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
+  }
+
+  /// Update user account 4-digit passcode in plain text
+  Future<void> updateUserAccountPasscode(String accountId, String plainPasscode) async {
+    final db = await dbHelper.database;
+    await db.update(
+      'user_accounts',
+      {
+        'passcode': plainPasscode.trim(),
+        'sync_status': 0,
+      },
+      where: 'id = ?',
+      whereArgs: [accountId],
+    );
+  }
+
+  /// Get all active users with their associated branch accounts
+  Future<List<UserModel>> getAllUsersWithAccounts() async {
+    final db = await dbHelper.database;
+    final res = await db.query(
+      'users',
+      where: 'is_active = 1',
+      orderBy: 'name ASC',
+    );
+    final List<UserModel> users = [];
+    for (var row in res) {
+      final user = UserModel.fromJson(row);
+      final accounts = await getAccountsForUser(user.id);
+      users.add(UserModel(
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        phone: user.phone,
+        isActive: user.isActive,
+        syncStatus: user.syncStatus,
+        accounts: accounts,
+      ));
+    }
+    return users;
   }
 
   Future<UserModel?> getOfflineUserByUsername(String username) async {
