@@ -24,10 +24,10 @@ class SettingsView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Obx(() => Text(isMobile ? 'menu_settings'.tr : 'settings_title'.tr,
-                style: TextStyle(fontSize: Responsive.titleFontSize(context), fontWeight: FontWeight.bold, color: AppColors.textPrimary))),
+            Text(isMobile ? 'menu_settings'.tr : 'settings_title'.tr,
+                style: TextStyle(fontSize: Responsive.titleFontSize(context), fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
             const SizedBox(height: 2),
-            Obx(() => Text('settings_subtitle'.tr, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary))),
+            Text('settings_subtitle'.tr, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
             const SizedBox(height: 18),
 
             // Profile & Active Branch Card

@@ -294,13 +294,13 @@ class _HomeViewState extends State<HomeView> {
                     item['icon'] as IconData,
                     color: isSelected ? AppColors.primaryLight : AppColors.textSecondary,
                   ),
-                  title: Obx(() => Text(
+                  title: Text(
                     (item['title_key'] as String?)?.tr ?? (item['title'] as String),
                     style: TextStyle(
                       color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
-                  )),
+                  ),
                   onTap: () {
                     setState(() => _selectedIndex = index);
                     Navigator.of(context).pop();
@@ -333,7 +333,7 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         body: menuItems[_selectedIndex]['view'] as Widget,
-        bottomNavigationBar: Obx(() => BottomNavigationBar(
+        bottomNavigationBar: BottomNavigationBar(
           currentIndex: _bottomNavCurrentIndex,
           onTap: (idx) => setState(() => _selectedIndex = _bottomNavIndexMap[idx]),
           backgroundColor: AppColors.cardBg,
@@ -348,7 +348,7 @@ class _HomeViewState extends State<HomeView> {
             BottomNavigationBarItem(icon: const Icon(Icons.people_alt_rounded), label: 'menu_customers'.tr),
             BottomNavigationBarItem(icon: const Icon(Icons.bar_chart_rounded), label: 'menu_reports'.tr),
           ],
-        )),
+        ),
       );
     }
 
@@ -414,14 +414,14 @@ class _HomeViewState extends State<HomeView> {
                           color: isSelected ? AppColors.primaryLight : AppColors.textSecondary,
                           size: 20,
                         ),
-                        title: Obx(() => Text(
+                        title: Text(
                           (item['title_key'] as String?)?.tr ?? (item['title'] as String),
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                             color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
                           ),
-                        )),
+                        ),
                         onTap: () => setState(() => _selectedIndex = index),
                       );
                     },
