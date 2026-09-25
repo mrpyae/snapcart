@@ -79,29 +79,31 @@ class CustomerOrderView extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isNarrow = constraints.maxWidth < 650;
-        final isVerySmall = constraints.maxWidth < 400;
+        final isVerySmall = constraints.maxWidth < 380;
         return Obx(() {
           return GridView.count(
             crossAxisCount: isNarrow ? 2 : 4,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
             shrinkWrap: true,
-            childAspectRatio: isVerySmall ? 1.85 : (isNarrow ? 2.05 : 2.5),
+            childAspectRatio: isVerySmall ? 1.75 : (isNarrow ? 1.95 : 2.5),
             physics: const NeverScrollableScrollPhysics(),
             children: [
               _buildMetricCard(
                 title: "Today's Appointments",
-                subTitle: 'ယနေ့ရက်ချိန်းများ',
+                subTitle: isNarrow ? 'ယနေ့ရက်ချိန်း' : 'ယနေ့ရက်ချိန်းများ',
                 value: '${controller.todayAppointmentsCount}',
                 icon: Icons.event_available_rounded,
                 color: Colors.blueAccent,
+                isMobile: isNarrow,
               ),
               _buildMetricCard(
                 title: 'In Progress (ရက်လုပ်ဆဲ)',
-                subTitle: 'Loom Weaving',
+                subTitle: isNarrow ? 'ရက်လုပ်ဆဲ' : 'Loom Weaving',
                 value: '${controller.inProgressCount}',
                 icon: Icons.precision_manufacturing_rounded,
                 color: Colors.amber.shade700,
+                isMobile: isNarrow,
               ),
               _buildMetricCard(
                 title: 'Ready for Pickup',
@@ -109,6 +111,7 @@ class CustomerOrderView extends StatelessWidget {
                 value: '${controller.readyForPickupCount}',
                 icon: Icons.inventory_rounded,
                 color: Colors.teal,
+                isMobile: isNarrow,
               ),
               _buildMetricCard(
                 title: 'Advance Collected',
@@ -116,6 +119,7 @@ class CustomerOrderView extends StatelessWidget {
                 value: Formatters.formatCurrency(controller.totalAdvanceDeposits),
                 icon: Icons.account_balance_wallet_rounded,
                 color: Colors.green,
+                isMobile: isNarrow,
               ),
             ],
           );
@@ -130,9 +134,10 @@ class CustomerOrderView extends StatelessWidget {
     required String value,
     required IconData icon,
     required Color color,
+    bool isMobile = false,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 10 : 14, vertical: isMobile ? 8 : 10),
       decoration: BoxDecoration(
         color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(12),
@@ -141,28 +146,39 @@ class CustomerOrderView extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(isMobile ? 6 : 8),
             decoration: BoxDecoration(
               color: color.withOpacity(0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: isMobile ? 17 : 20),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: isMobile ? 8 : 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  value,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: isMobile ? 14 : 16,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   subTitle,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  style: TextStyle(
+                    fontSize: isMobile ? 10.5 : 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -377,8 +393,10 @@ class CustomerOrderView extends StatelessWidget {
 
   // Order Card Component
   Widget _buildOrderCard(BuildContext context, CustomerOrderModel order, CustomerOrderController controller) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(isMobile ? 12 : 14),
       decoration: BoxDecoration(
         color: AppColors.cardBg,
         borderRadius: BorderRadius.circular(14),
@@ -389,90 +407,83 @@ class CustomerOrderView extends StatelessWidget {
         children: [
           // Card Header: Order No, Source Badge, Status Badge & Actions
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.cardBgLight,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Text(
-                        order.orderNo,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-
-                    // Lead Source Badge
-                    Flexible(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: _getSourceColor(order.orderSource).withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: _getSourceColor(order.orderSource), width: 0.8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(_getSourceIcon(order.orderSource), size: 12, color: _getSourceColor(order.orderSource)),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                '${order.sourceLabel}${order.leadAccount != null && order.leadAccount!.isNotEmpty ? " • ${order.leadAccount}" : ""}',
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _getSourceColor(order.orderSource)),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBgLight,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Text(
+                  order.orderNo,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                 ),
               ),
-              const SizedBox(width: 6),
-              Row(
-                children: [
-                  // Status Badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: order.statusColor.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: order.statusColor, width: 0.8),
-                    ),
-                    child: Text(
-                      order.statusLabel,
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: order.statusColor),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
+              const SizedBox(width: 8),
 
-                  // Popup Menu Actions
-                  PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert_rounded, size: 18, color: AppColors.textMuted),
-                    onSelected: (val) {
-                      if (val == 'payment') {
-                        _showPaymentSettlementDialog(context, order, controller);
-                      } else if (val == 'reschedule') {
-                        _showRescheduleDialog(context, order, controller);
-                      } else if (val == 'delete') {
-                        _showDeleteConfirmDialog(context, order, controller);
-                      }
-                    },
-                    itemBuilder: (ctx) => [
-                      if (order.dueAmount > 0)
-                        const PopupMenuItem(value: 'payment', child: Text('💳 ငွေလက်ခံမည် (Collect Payment)')),
-                      const PopupMenuItem(value: 'reschedule', child: Text('ရက်ချိန်းပြောင်းမည် (Reschedule)')),
-                      const PopupMenuItem(value: 'delete', child: Text('ဖျက်မည် (Delete)', style: TextStyle(color: Colors.red))),
+              // Lead Source Badge
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: _getSourceColor(order.orderSource).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: _getSourceColor(order.orderSource), width: 0.8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(_getSourceIcon(order.orderSource), size: 12, color: _getSourceColor(order.orderSource)),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          '${order.sourceLabel}${order.leadAccount != null && order.leadAccount!.isNotEmpty ? " • ${order.leadAccount}" : ""}',
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _getSourceColor(order.orderSource)),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
                     ],
                   ),
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // Status Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: order.statusColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: order.statusColor, width: 0.8),
+                ),
+                child: Text(
+                  order.statusLabel,
+                  style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold, color: order.statusColor),
+                ),
+              ),
+
+              // Popup Menu Actions
+              PopupMenuButton<String>(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.more_vert_rounded, size: 20, color: AppColors.textMuted),
+                onSelected: (val) {
+                  if (val == 'payment') {
+                    _showPaymentSettlementDialog(context, order, controller);
+                  } else if (val == 'reschedule') {
+                    _showRescheduleDialog(context, order, controller);
+                  } else if (val == 'delete') {
+                    _showDeleteConfirmDialog(context, order, controller);
+                  }
+                },
+                itemBuilder: (ctx) => [
+                  if (order.dueAmount > 0)
+                    const PopupMenuItem(value: 'payment', child: Text('💳 ငွေလက်ခံမည် (Collect Payment)')),
+                  const PopupMenuItem(value: 'reschedule', child: Text('ရက်ချိန်းပြောင်းမည် (Reschedule)')),
+                  const PopupMenuItem(value: 'delete', child: Text('ဖျက်မည် (Delete)', style: TextStyle(color: Colors.red))),
                 ],
               ),
             ],
@@ -480,7 +491,7 @@ class CustomerOrderView extends StatelessWidget {
           const SizedBox(height: 10),
 
           // Customer Info & Appointment Section
-          if (MediaQuery.of(context).size.width < 650) ...[
+          if (isMobile) ...[
             Row(
               children: [
                 const Icon(Icons.person_rounded, size: 16, color: AppColors.primaryLight),
@@ -513,18 +524,18 @@ class CustomerOrderView extends StatelessWidget {
                   const Icon(Icons.event_note_rounded, size: 16, color: Colors.blue),
                   const SizedBox(width: 6),
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           order.appointmentTypeLabel,
-                          style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Colors.blue),
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blue),
                         ),
                         Text(
                           order.appointmentDate != null
                               ? DateFormat('yyyy-MM-dd hh:mm a').format(DateTime.parse(order.appointmentDate!))
                               : 'No date scheduled',
-                          style: const TextStyle(fontSize: 10.5, color: AppColors.textSecondary),
+                          style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -546,14 +557,13 @@ class CustomerOrderView extends StatelessWidget {
                         children: [
                           const Icon(Icons.person_rounded, size: 16, color: AppColors.primaryLight),
                           const SizedBox(width: 6),
-                          Text(
-                            order.customerName,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                          Expanded(
+                            child: Text(
+                              '${order.customerName}${order.customerPhone != null && order.customerPhone!.isNotEmpty ? " (${order.customerPhone})" : ""}',
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          if (order.customerPhone != null && order.customerPhone!.isNotEmpty) ...[
-                            const SizedBox(width: 6),
-                            Text('(${order.customerPhone})', style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
-                          ],
                         ],
                       ),
                       if (order.customerAddress != null && order.customerAddress!.isNotEmpty)
@@ -617,9 +627,12 @@ class CustomerOrderView extends StatelessWidget {
                 children: [
                   const Icon(Icons.precision_manufacturing_rounded, size: 13, color: Colors.teal),
                   const SizedBox(width: 4),
-                  Text(
-                    'Supplier / Weaver: ${order.supplierName}',
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.teal),
+                  Flexible(
+                    child: Text(
+                      'Supplier: ${order.supplierName}',
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.teal),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -640,8 +653,16 @@ class CustomerOrderView extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Expanded(
+                          child: Text(
+                            '${item.itemName} (${Formatters.formatQty(item.quantity, unit: item.unit)})',
+                            style: const TextStyle(fontSize: 11.5, color: AppColors.textPrimary),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         Text(
                           Formatters.formatCurrency(item.subtotal),
                           style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
@@ -655,16 +676,18 @@ class CustomerOrderView extends StatelessWidget {
           const SizedBox(height: 10),
 
           // Financial Summary & Quick Progression Buttons
-          Wrap(
-            spacing: 10,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            alignment: WrapAlignment.spaceBetween,
-            children: [
-              // Financials
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
+          if (isMobile) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.cardBgLight.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 6,
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   _buildFinancePill('Total', Formatters.formatCurrency(order.totalAmount), AppColors.textPrimary),
                   _buildFinancePill('Advance Paid', Formatters.formatCurrency(order.advanceAmount), Colors.green),
@@ -676,11 +699,40 @@ class CustomerOrderView extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: _buildProgressionAction(context, order, controller, isFullWidth: true),
+            ),
+          ] else ...[
+            Wrap(
+              spacing: 10,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              alignment: WrapAlignment.spaceBetween,
+              children: [
+                // Financials
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 4,
+                  children: [
+                    _buildFinancePill('Total', Formatters.formatCurrency(order.totalAmount), AppColors.textPrimary),
+                    _buildFinancePill('Advance Paid', Formatters.formatCurrency(order.advanceAmount), Colors.green),
+                    _buildFinancePill(
+                      'Due',
+                      Formatters.formatCurrency(order.dueAmount),
+                      order.dueAmount > 0 ? AppColors.error : AppColors.textMuted,
+                      onPayTap: order.dueAmount > 0 ? () => _showPaymentSettlementDialog(context, order, controller) : null,
+                    ),
+                  ],
+                ),
 
-              // Workflow Action Progression Button
-              _buildProgressionAction(context, order, controller),
-            ],
-          ),
+                // Workflow Action Progression Button
+                _buildProgressionAction(context, order, controller),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -710,9 +762,9 @@ class CustomerOrderView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(color: Colors.green, width: 0.8),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(Icons.add_rounded, size: 10, color: Colors.green),
                   Text('Pay', style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold, color: Colors.green)),
                 ],
@@ -724,11 +776,16 @@ class CustomerOrderView extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressionAction(BuildContext context, CustomerOrderModel order, CustomerOrderController controller) {
+  Widget _buildProgressionAction(
+    BuildContext context,
+    CustomerOrderModel order,
+    CustomerOrderController controller, {
+    bool isFullWidth = false,
+  }) {
     switch (order.status) {
       case 'PENDING':
         return SizedBox(
-          height: 34,
+          height: isFullWidth ? 38 : 34,
           child: ElevatedButton.icon(
             onPressed: () => controller.updateStatus(order.id, 'CONFIRMED'),
             icon: const Icon(Icons.check_circle_outline_rounded, size: 15),
@@ -738,7 +795,7 @@ class CustomerOrderView extends StatelessWidget {
         );
       case 'CONFIRMED':
         return SizedBox(
-          height: 34,
+          height: isFullWidth ? 38 : 34,
           child: ElevatedButton.icon(
             onPressed: () => controller.updateStatus(order.id, 'IN_PROGRESS'),
             icon: const Icon(Icons.play_arrow_rounded, size: 15),
@@ -748,7 +805,7 @@ class CustomerOrderView extends StatelessWidget {
         );
       case 'IN_PROGRESS':
         return SizedBox(
-          height: 34,
+          height: isFullWidth ? 38 : 34,
           child: ElevatedButton.icon(
             onPressed: () => controller.updateStatus(order.id, 'READY_FOR_PICKUP'),
             icon: const Icon(Icons.inventory_rounded, size: 15),
@@ -758,7 +815,7 @@ class CustomerOrderView extends StatelessWidget {
         );
       case 'READY_FOR_PICKUP':
         return SizedBox(
-          height: 34,
+          height: isFullWidth ? 38 : 34,
           child: ElevatedButton.icon(
             onPressed: () {
               if (order.dueAmount > 0) {
@@ -780,6 +837,35 @@ class CustomerOrderView extends StatelessWidget {
         );
       case 'COMPLETED':
         if (order.dueAmount > 0) {
+          if (isFullWidth) {
+            return Row(
+              children: [
+                const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 16),
+                    SizedBox(width: 4),
+                    Text('Completed (Due)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.orange)),
+                  ],
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: SizedBox(
+                    height: 34,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showPaymentSettlementDialog(context, order, controller),
+                      icon: const Icon(Icons.payments_outlined, size: 13),
+                      label: const Text('Pay Due (ငွေရှင်းမည်)', style: TextStyle(fontSize: 11)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
           return Wrap(
             spacing: 8,
             runSpacing: 4,
@@ -873,25 +959,26 @@ class CustomerOrderView extends StatelessWidget {
 
     DateTime selectedDate = DateTime.now().add(const Duration(days: 2));
     TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
-    String selectedAppointmentType = 'LOOM_WEAVING';
+    String selectedAppointmentType = 'DELIVERY_TARGET';
 
     final List<Map<String, dynamic>> orderItems = [
       {
         'productId': null,
         'supplierId': null,
         'supplierName': null,
-        'itemName': TextEditingController(text: 'ရိုးရာ ပိုးချည်ထည်'),
-        'fabricType': TextEditingController(text: 'ပိုးချည်'),
-        'color': TextEditingController(text: 'နက်ပြာ / ရွှေပွင့်'),
+        'itemName': TextEditingController(),
+        'fabricType': TextEditingController(),
+        'color': TextEditingController(),
         'quantity': TextEditingController(text: '1'),
         'unit': 'piece',
-        'unitPrice': TextEditingController(text: '45000'),
+        'unitPrice': TextEditingController(text: '0'),
       }
     ];
 
     Get.dialog(
       Dialog(
         backgroundColor: AppColors.cardBg,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: StatefulBuilder(
           builder: (context, setState) {
@@ -909,230 +996,348 @@ class CustomerOrderView extends StatelessWidget {
             final advance = double.tryParse(advanceCtrl.text.trim()) ?? 0.0;
             final due = (total - advance).clamp(0.0, double.infinity);
             final screenWidth = MediaQuery.of(context).size.width;
-            return Container(
-              constraints: const BoxConstraints(maxWidth: 580),
-              width: screenWidth < 620 ? screenWidth * 0.94 : 580,
-              padding: EdgeInsets.all(screenWidth < 600 ? 14 : 22),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Modal Title
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: const [
-                            Icon(Icons.event_note_rounded, color: AppColors.primaryLight, size: 22),
-                            SizedBox(width: 8),
-                            Text('New Customer Order & Appointment', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textMuted),
-                          onPressed: () => Get.back(),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
+            final isMobile = screenWidth < 600;
 
-                    // Customer Selection / Input
-                    DropdownButtonFormField<CustomerModel?>(
-                      value: selectedCustomer,
-                      decoration: const InputDecoration(
-                        labelText: 'Select Registered Customer (or fill below)',
-                        prefixIcon: Icon(Icons.person_outline_rounded, size: 18, color: AppColors.primaryLight),
-                      ),
-                      items: [
-                        const DropdownMenuItem(value: null, child: Text('Walk-in / Direct Input')),
-                        ...controller.customers.map((c) => DropdownMenuItem(
-                          value: c,
-                          child: Text('${c.name} ${c.phone != null ? "(${c.phone})" : ""}'),
-                        )),
-                      ],
-                      onChanged: (val) {
-                        setState(() {
-                          selectedCustomer = val;
-                          if (val != null) {
-                            customerNameCtrl.text = val.name;
-                            customerPhoneCtrl.text = val.phone ?? '';
-                            customerAddressCtrl.text = val.address ?? '';
-                          }
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: customerNameCtrl,
-                            decoration: const InputDecoration(labelText: 'Customer Name *'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: TextField(
-                            controller: customerPhoneCtrl,
-                            decoration: const InputDecoration(labelText: 'Phone Number'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Order Source & Lead Account
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 4,
-                          child: DropdownButtonFormField<String>(
-                            value: selectedSource,
-                            decoration: const InputDecoration(labelText: 'Order Source (လမ်းကြောင်း)'),
-                            items: const [
-                              DropdownMenuItem(value: 'MESSENGER', child: Text('🔵 Messenger')),
-                              DropdownMenuItem(value: 'VIBER', child: Text('🟣 Viber')),
-                              DropdownMenuItem(value: 'PHONE', child: Text('📞 Phone')),
-                              DropdownMenuItem(value: 'TELEGRAM', child: Text('✈️ Telegram')),
-                              DropdownMenuItem(value: 'TIKTOK', child: Text('🎵 TikTok')),
-                              DropdownMenuItem(value: 'WALK_IN', child: Text('🏪 Walk-in')),
-                              DropdownMenuItem(value: 'OTHER', child: Text('🌐 Other')),
-                            ],
-                            onChanged: (val) => setState(() => selectedSource = val ?? 'MESSENGER'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          flex: 6,
-                          child: TextField(
-                            controller: leadAccountCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'Lead / Page Account Name',
-                              hintText: 'e.g. Main Facebook Page / Viber 09...',
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 580,
+                maxHeight: MediaQuery.of(context).size.height * 0.9,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(isMobile ? 12 : 20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Modal Title
+                      Row(
+                        children: [
+                          const Icon(Icons.event_note_rounded, color: AppColors.primaryLight, size: 22),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'New Customer Order & Appointment',
+                              style: TextStyle(
+                                fontSize: isMobile ? 14.5 : 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, size: 20, color: AppColors.textMuted),
+                            onPressed: () => Get.back(),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
 
-                    // Primary Supplier / Weaver Selector
-                    Obx(() {
-                      final currentId = selectedSupplier?.id;
-                      final isValid = controller.suppliers.any((s) => s.id == currentId);
-                      return DropdownButtonFormField<String?>(
-                        value: isValid ? currentId : null,
+                      // Customer Selection / Input
+                      DropdownButtonFormField<CustomerModel?>(
+                        value: selectedCustomer,
+                        isExpanded: true,
                         decoration: const InputDecoration(
-                          labelText: 'Assign Primary Supplier / Weaver (ရက္ကန်း/ကုန်သွင်းသူ ချိတ်ဆက်ရန်)',
-                          prefixIcon: Icon(Icons.precision_manufacturing_rounded, size: 18, color: Colors.teal),
+                          labelText: 'Select Registered Customer (or fill below)',
+                          prefixIcon: Icon(Icons.person_outline_rounded, size: 18, color: AppColors.primaryLight),
                         ),
                         items: [
-                          const DropdownMenuItem<String?>(value: null, child: Text('No Supplier Assigned (General)')),
-                          ...controller.suppliers.map((s) => DropdownMenuItem<String?>(
-                            value: s.id,
-                            child: Text('${s.name} ${s.companyName != null ? "(${s.companyName})" : ""}'),
+                          const DropdownMenuItem(value: null, child: Text('Walk-in / Direct Input')),
+                          ...controller.customers.map((c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(
+                              '${c.name} ${c.phone != null ? "(${c.phone})" : ""}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           )),
                         ],
                         onChanged: (val) {
                           setState(() {
-                            selectedSupplier = controller.suppliers.firstWhereOrNull((s) => s.id == val);
+                            selectedCustomer = val;
+                            if (val != null) {
+                              customerNameCtrl.text = val.name;
+                              customerPhoneCtrl.text = val.phone ?? '';
+                              customerAddressCtrl.text = val.address ?? '';
+                            }
                           });
                         },
-                      );
-                    }),
-                    const SizedBox(height: 14),
-
-                    // Appointment Schedule Section
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.06),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.blue.withOpacity(0.3)),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Appointment Scheduling (ရက်ချိန်းသတ်မှတ်ခြင်း)', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.blue)),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 5,
-                                child: DropdownButtonFormField<String>(
-                                  value: selectedAppointmentType,
-                                  decoration: const InputDecoration(labelText: 'Appointment Type'),
-                                  items: const [
-                                    DropdownMenuItem(value: 'LOOM_WEAVING', child: Text('🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း')),
-                                    DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text('📦 အထည်လာပို့ခြင်း')),
-                                    DropdownMenuItem(value: 'PACKING', child: Text('🏷️ ပစ္စည်းထုတ်ပိုးခြင်း')),
-                                    DropdownMenuItem(value: 'DELIVERY', child: Text('🚚 ပို့ဆောင်ခြင်း')),
-                                  ],
-                                  onChanged: (val) => setState(() => selectedAppointmentType = val ?? 'LOOM_WEAVING'),
+                      const SizedBox(height: 10),
+
+                      if (isMobile) ...[
+                        TextField(
+                          controller: customerNameCtrl,
+                          decoration: const InputDecoration(labelText: 'Customer Name *', isDense: true),
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: customerPhoneCtrl,
+                          keyboardType: TextInputType.phone,
+                          decoration: const InputDecoration(labelText: 'Phone Number', isDense: true),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: customerNameCtrl,
+                                decoration: const InputDecoration(labelText: 'Customer Name *'),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextField(
+                                controller: customerPhoneCtrl,
+                                keyboardType: TextInputType.phone,
+                                decoration: const InputDecoration(labelText: 'Phone Number'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+
+                      // Order Source & Lead Account
+                      if (isMobile) ...[
+                        DropdownButtonFormField<String>(
+                          value: selectedSource,
+                          isExpanded: true,
+                          decoration: const InputDecoration(labelText: 'Order Source (လမ်းကြောင်း)', isDense: true),
+                          items: const [
+                            DropdownMenuItem(value: 'MESSENGER', child: Text('🔵 Messenger')),
+                            DropdownMenuItem(value: 'VIBER', child: Text('🟣 Viber')),
+                            DropdownMenuItem(value: 'PHONE', child: Text('📞 Phone')),
+                            DropdownMenuItem(value: 'TELEGRAM', child: Text('✈️ Telegram')),
+                            DropdownMenuItem(value: 'TIKTOK', child: Text('🎵 TikTok')),
+                            DropdownMenuItem(value: 'WALK_IN', child: Text('🏪 Walk-in')),
+                            DropdownMenuItem(value: 'OTHER', child: Text('🌐 Other')),
+                          ],
+                          onChanged: (val) => setState(() => selectedSource = val ?? 'MESSENGER'),
+                        ),
+                        const SizedBox(height: 8),
+                        TextField(
+                          controller: leadAccountCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Lead / Page Account Name',
+                            hintText: 'e.g. Main Facebook Page / Viber 09...',
+                            isDense: true,
+                          ),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: DropdownButtonFormField<String>(
+                                value: selectedSource,
+                                isExpanded: true,
+                                decoration: const InputDecoration(labelText: 'Order Source (လမ်းကြောင်း)'),
+                                items: const [
+                                  DropdownMenuItem(value: 'MESSENGER', child: Text('🔵 Messenger')),
+                                  DropdownMenuItem(value: 'VIBER', child: Text('🟣 Viber')),
+                                  DropdownMenuItem(value: 'PHONE', child: Text('📞 Phone')),
+                                  DropdownMenuItem(value: 'TELEGRAM', child: Text('✈️ Telegram')),
+                                  DropdownMenuItem(value: 'TIKTOK', child: Text('🎵 TikTok')),
+                                  DropdownMenuItem(value: 'WALK_IN', child: Text('🏪 Walk-in')),
+                                  DropdownMenuItem(value: 'OTHER', child: Text('🌐 Other')),
+                                ],
+                                onChanged: (val) => setState(() => selectedSource = val ?? 'MESSENGER'),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              flex: 6,
+                              child: TextField(
+                                controller: leadAccountCtrl,
+                                decoration: const InputDecoration(
+                                  labelText: 'Lead / Page Account Name',
+                                  hintText: 'e.g. Main Facebook Page / Viber 09...',
                                 ),
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                flex: 5,
-                                child: InkWell(
-                                  onTap: () async {
-                                    final pickedDate = await showDatePicker(
+                            ),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+
+                      // Primary Supplier / Weaver Selector
+                      Obx(() {
+                        final currentId = selectedSupplier?.id;
+                        final isValid = controller.suppliers.any((s) => s.id == currentId);
+                        return DropdownButtonFormField<String?>(
+                          value: isValid ? currentId : null,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Assign Primary Supplier / Weaver (ရက္ကန်း/ကုန်သွင်းသူ)',
+                            prefixIcon: Icon(Icons.precision_manufacturing_rounded, size: 18, color: Colors.teal),
+                          ),
+                          items: [
+                            const DropdownMenuItem<String?>(value: null, child: Text('No Supplier Assigned (General)')),
+                            ...controller.suppliers.map((s) => DropdownMenuItem<String?>(
+                              value: s.id,
+                              child: Text(
+                                '${s.name} ${s.companyName != null ? "(${s.companyName})" : ""}',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )),
+                          ],
+                          onChanged: (val) {
+                            setState(() {
+                              selectedSupplier = controller.suppliers.firstWhereOrNull((s) => s.id == val);
+                            });
+                          },
+                        );
+                      }),
+                      const SizedBox(height: 14),
+
+                      // Appointment Schedule Section
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.06),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Appointment Scheduling (ရက်ချိန်းသတ်မှတ်ခြင်း)',
+                                style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.bold, color: Colors.blue)),
+                            const SizedBox(height: 10),
+                            if (isMobile) ...[
+                              DropdownButtonFormField<String>(
+                                value: selectedAppointmentType,
+                                isExpanded: true,
+                                decoration: const InputDecoration(labelText: 'Appointment Type', isDense: true),
+                                items: const [
+                                  DropdownMenuItem(value: 'LOOM_WEAVING', child: Text('🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း', overflow: TextOverflow.ellipsis)),
+                                  DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text('📦 အထည်လာပို့ခြင်း', overflow: TextOverflow.ellipsis)),
+                                  DropdownMenuItem(value: 'PACKING', child: Text('🏷️ ပစ္စည်းထုတ်ပိုးခြင်း', overflow: TextOverflow.ellipsis)),
+                                  DropdownMenuItem(value: 'DELIVERY', child: Text('🚚 ပို့ဆောင်ခြင်း', overflow: TextOverflow.ellipsis)),
+                                ],
+                                onChanged: (val) => setState(() => selectedAppointmentType = val ?? 'LOOM_WEAVING'),
+                              ),
+                              const SizedBox(height: 8),
+                              InkWell(
+                                onTap: () async {
+                                  final pickedDate = await showDatePicker(
+                                    context: context,
+                                    initialDate: selectedDate,
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                                  );
+                                  if (pickedDate != null) {
+                                    final pickedTime = await showTimePicker(
                                       context: context,
-                                      initialDate: selectedDate,
-                                      firstDate: DateTime.now(),
-                                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                                      initialTime: selectedTime,
                                     );
-                                    if (pickedDate != null) {
-                                      final pickedTime = await showTimePicker(
-                                        context: context,
-                                        initialTime: selectedTime,
-                                      );
-                                      if (pickedTime != null) {
-                                        setState(() {
-                                          selectedDate = pickedDate;
-                                          selectedTime = pickedTime;
-                                        });
-                                      }
+                                    if (pickedTime != null) {
+                                      setState(() {
+                                        selectedDate = pickedDate;
+                                        selectedTime = pickedTime;
+                                      });
                                     }
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.cardBgLight,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: AppColors.border),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          '${DateFormat('yyyy-MM-dd').format(selectedDate)} ${selectedTime.format(context)}',
-                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                                        ),
-                                        const Icon(Icons.calendar_today_rounded, size: 16, color: Colors.blue),
-                                      ],
-                                    ),
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.cardBgLight,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: AppColors.border),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '${DateFormat('yyyy-MM-dd').format(selectedDate)} ${selectedTime.format(context)}',
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                                      ),
+                                      const Icon(Icons.calendar_today_rounded, size: 16, color: Colors.blue),
+                                    ],
                                   ),
                                 ),
                               ),
+                            ] else ...[
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 5,
+                                    child: DropdownButtonFormField<String>(
+                                      value: selectedAppointmentType,
+                                      isExpanded: true,
+                                      decoration: const InputDecoration(labelText: 'Appointment Type'),
+                                      items: const [
+                                        DropdownMenuItem(value: 'LOOM_WEAVING', child: Text('🧵 ရက္ကန်းနှင့်ချိတ်ဆက်ခြင်း', overflow: TextOverflow.ellipsis)),
+                                        DropdownMenuItem(value: 'FABRIC_DELIVERY_IN', child: Text('📦 အထည်လာပို့ခြင်း', overflow: TextOverflow.ellipsis)),
+                                        DropdownMenuItem(value: 'PACKING', child: Text('🏷️ ပစ္စည်းထုတ်ပိုးခြင်း', overflow: TextOverflow.ellipsis)),
+                                        DropdownMenuItem(value: 'DELIVERY', child: Text('🚚 ပို့ဆောင်ခြင်း', overflow: TextOverflow.ellipsis)),
+                                      ],
+                                      onChanged: (val) => setState(() => selectedAppointmentType = val ?? 'LOOM_WEAVING'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    flex: 5,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        final pickedDate = await showDatePicker(
+                                          context: context,
+                                          initialDate: selectedDate,
+                                          firstDate: DateTime.now(),
+                                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                                        );
+                                        if (pickedDate != null) {
+                                          final pickedTime = await showTimePicker(
+                                            context: context,
+                                            initialTime: selectedTime,
+                                          );
+                                          if (pickedTime != null) {
+                                            setState(() {
+                                              selectedDate = pickedDate;
+                                              selectedTime = pickedTime;
+                                            });
+                                          }
+                                        }
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.cardBgLight,
+                                          borderRadius: BorderRadius.circular(8),
+                                          border: Border.all(color: AppColors.border),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '${DateFormat('yyyy-MM-dd').format(selectedDate)} ${selectedTime.format(context)}',
+                                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                                            ),
+                                            const Icon(Icons.calendar_today_rounded, size: 16, color: Colors.blue),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 14),
+                      const SizedBox(height: 14),
 
-                    // Order Items Builder
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                      // Order Items Builder
+                      if (isMobile) ...[
                         Row(
                           children: [
-                            const Text('မှာယူသည့် အထည်များ', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                            const Text('မှာယူသည့် အထည်များ',
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                             const SizedBox(width: 6),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -1147,14 +1352,15 @@ class CustomerOrderView extends StatelessWidget {
                             ),
                           ],
                         ),
-                        Row(
+                        const SizedBox(height: 6),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
                           children: [
-                            // 1. Multi-Select from Existing Products Catalog
                             TextButton.icon(
                               onPressed: () {
                                 _showMultiProductSelectModal(context, controller, (selectedProducts) {
                                   setState(() {
-                                    // If only 1 initial blank item exists, replace it
                                     if (orderItems.length == 1 &&
                                         (orderItems[0]['itemName'] as TextEditingController).text.trim().isEmpty) {
                                       orderItems.clear();
@@ -1176,11 +1382,8 @@ class CustomerOrderView extends StatelessWidget {
                                 });
                               },
                               icon: const Icon(Icons.playlist_add_rounded, size: 16, color: AppColors.secondary),
-                              label: const Text('+ပစ္စည်းများမှရွေးမည်', style: TextStyle(fontSize: 11, color: AppColors.secondary, fontWeight: FontWeight.bold)),
+                              label: const Text('+ပစ္စည်းမှရွေးမည်', style: TextStyle(fontSize: 11, color: AppColors.secondary, fontWeight: FontWeight.bold)),
                             ),
-                            const SizedBox(width: 4),
-
-                            // 2. Add New Custom / Bespoke Item
                             TextButton.icon(
                               onPressed: () {
                                 setState(() {
@@ -1198,321 +1401,404 @@ class CustomerOrderView extends StatelessWidget {
                                 });
                               },
                               icon: const Icon(Icons.add_circle_outline_rounded, size: 14),
-                              label: const Text('+ Custom Item (အသစ်)', style: TextStyle(fontSize: 11)),
+                              label: const Text('+ Custom Item', style: TextStyle(fontSize: 11)),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-
-                    ...orderItems.asMap().entries.map((entry) {
-                      final idx = entry.key;
-                      final item = entry.value;
-                      final isExistingProduct = item['productId'] != null;
-                      final ProductModel? matchedProduct = isExistingProduct
-                          ? controller.products.firstWhereOrNull((p) => p.id == item['productId'])
-                          : null;
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBgLight,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isExistingProduct ? AppColors.secondary.withOpacity(0.4) : AppColors.border,
-                            width: isExistingProduct ? 1.2 : 1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      ] else ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
+                                const Text('မှာယူသည့် အထည်များ',
+                                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                                const SizedBox(width: 6),
                                 Container(
-                                  margin: const EdgeInsets.only(right: 6),
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: isExistingProduct ? AppColors.secondary.withOpacity(0.15) : Colors.grey.withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(4),
+                                    color: AppColors.secondary.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
-                                    isExistingProduct ? '#${idx + 1} Catalog' : '#${idx + 1} Custom',
-                                    style: TextStyle(
-                                      fontSize: 9.5,
-                                      fontWeight: FontWeight.bold,
-                                      color: isExistingProduct ? AppColors.secondary : AppColors.textSecondary,
-                                    ),
+                                    '${orderItems.length} items',
+                                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.secondary),
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 5,
-                                  child: TextField(
-                                    controller: item['itemName'],
-                                    decoration: InputDecoration(
-                                      labelText: isExistingProduct ? 'Product Name *' : 'Custom Item Name *',
-                                      hintText: 'e.g. ပိုးလွန်းကြင် ဝမ်းဆက်',
-                                      suffixIcon: IconButton(
-                                        icon: const Icon(Icons.search_rounded, size: 16, color: AppColors.secondary),
-                                        tooltip: 'Select / Change Product',
-                                        onPressed: () {
-                                          _showProductSelectModal(context, controller, (product) {
-                                            setState(() {
-                                              item['productId'] = product.id;
-                                              (item['itemName'] as TextEditingController).text = product.name;
-                                              (item['fabricType'] as TextEditingController).text = product.fabricType ?? '';
-                                              (item['color'] as TextEditingController).text = product.color ?? '';
-                                              (item['unitPrice'] as TextEditingController).text = product.retailPrice.toStringAsFixed(0);
-                                              item['unit'] = product.unit;
-                                            });
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () {
+                                    _showMultiProductSelectModal(context, controller, (selectedProducts) {
+                                      setState(() {
+                                        if (orderItems.length == 1 &&
+                                            (orderItems[0]['itemName'] as TextEditingController).text.trim().isEmpty) {
+                                          orderItems.clear();
+                                        }
+                                        for (var product in selectedProducts) {
+                                          orderItems.add({
+                                            'productId': product.id,
+                                            'supplierId': selectedSupplier?.id,
+                                            'supplierName': selectedSupplier?.name,
+                                            'itemName': TextEditingController(text: product.name),
+                                            'fabricType': TextEditingController(text: product.fabricType ?? ''),
+                                            'color': TextEditingController(text: product.color ?? ''),
+                                            'quantity': TextEditingController(text: '1'),
+                                            'unit': product.unit,
+                                            'unitPrice': TextEditingController(text: product.retailPrice.toStringAsFixed(0)),
                                           });
-                                        },
+                                        }
+                                      });
+                                    });
+                                  },
+                                  icon: const Icon(Icons.playlist_add_rounded, size: 16, color: AppColors.secondary),
+                                  label: const Text('+ပစ္စည်းများမှရွေးမည်', style: TextStyle(fontSize: 11, color: AppColors.secondary, fontWeight: FontWeight.bold)),
+                                ),
+                                const SizedBox(width: 4),
+                                TextButton.icon(
+                                  onPressed: () {
+                                    setState(() {
+                                      orderItems.add({
+                                        'productId': null,
+                                        'supplierId': selectedSupplier?.id,
+                                        'supplierName': selectedSupplier?.name,
+                                        'itemName': TextEditingController(text: ''),
+                                        'fabricType': TextEditingController(text: ''),
+                                        'color': TextEditingController(text: ''),
+                                        'quantity': TextEditingController(text: '1'),
+                                        'unit': 'piece',
+                                        'unitPrice': TextEditingController(text: '0'),
+                                      });
+                                    });
+                                  },
+                                  icon: const Icon(Icons.add_circle_outline_rounded, size: 14),
+                                  label: const Text('+ Custom Item (အသစ်)', style: TextStyle(fontSize: 11)),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 6),
+
+                      ...orderItems.asMap().entries.map((entry) {
+                        final idx = entry.key;
+                        final item = entry.value;
+                        final isExistingProduct = item['productId'] != null;
+                        final ProductModel? matchedProduct = isExistingProduct
+                            ? controller.products.firstWhereOrNull((p) => p.id == item['productId'])
+                            : null;
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.cardBgLight,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isExistingProduct ? AppColors.secondary.withOpacity(0.4) : AppColors.border,
+                              width: isExistingProduct ? 1.2 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.only(right: 6),
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: isExistingProduct ? AppColors.secondary.withOpacity(0.15) : Colors.grey.withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      isExistingProduct ? '#${idx + 1} Catalog' : '#${idx + 1} Custom',
+                                      style: TextStyle(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.bold,
+                                        color: isExistingProduct ? AppColors.secondary : AppColors.textSecondary,
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  flex: 3,
-                                  child: TextField(
-                                    controller: item['fabricType'],
-                                    decoration: const InputDecoration(labelText: 'Fabric / Color'),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: item['itemName'],
+                                      decoration: InputDecoration(
+                                        labelText: isExistingProduct ? 'Product Name *' : 'Custom Item Name *',
+                                        hintText: 'e.g. ပိုးလွန်းကြင် ဝမ်းဆက်',
+                                        isDense: true,
+                                        suffixIcon: IconButton(
+                                          icon: const Icon(Icons.search_rounded, size: 16, color: AppColors.secondary),
+                                          tooltip: 'Select / Change Product',
+                                          onPressed: () {
+                                            _showProductSelectModal(context, controller, (product) {
+                                              setState(() {
+                                                item['productId'] = product.id;
+                                                (item['itemName'] as TextEditingController).text = product.name;
+                                                (item['fabricType'] as TextEditingController).text = product.fabricType ?? '';
+                                                (item['color'] as TextEditingController).text = product.color ?? '';
+                                                (item['unitPrice'] as TextEditingController).text = product.retailPrice.toStringAsFixed(0);
+                                                item['unit'] = product.unit;
+                                              });
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  if (orderItems.length > 1)
+                                    IconButton(
+                                      icon: const Icon(Icons.remove_circle_outline_rounded, color: Colors.red, size: 18),
+                                      tooltip: 'Remove Item',
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                      onPressed: () => setState(() => orderItems.removeAt(idx)),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                controller: item['fabricType'],
+                                decoration: const InputDecoration(labelText: 'Fabric / Color (အရောင်/အထည်အမျိုးအစား)', isDense: true),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: TextField(
+                                      controller: item['quantity'],
+                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                      onChanged: (_) => setState(() {}),
+                                      decoration: const InputDecoration(labelText: 'Qty', isDense: true),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    flex: 3,
+                                    child: DropdownButtonFormField<String>(
+                                      value: item['unit'] as String,
+                                      isExpanded: true,
+                                      decoration: const InputDecoration(labelText: 'Unit', isDense: true),
+                                      items: const [
+                                        DropdownMenuItem(value: 'piece', child: Text('Piece (ထည်)')),
+                                        DropdownMenuItem(value: 'yard', child: Text('Yard (ကိုက်)')),
+                                        DropdownMenuItem(value: 'meter', child: Text('Meter (မီတာ)')),
+                                        DropdownMenuItem(value: 'set', child: Text('Set (စုံ)')),
+                                      ],
+                                      onChanged: (val) => setState(() => item['unit'] = val ?? 'piece'),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    flex: 4,
+                                    child: TextField(
+                                      controller: item['unitPrice'],
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (_) => setState(() {}),
+                                      decoration: const InputDecoration(labelText: 'Unit Price', isDense: true),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Product Inventory & Supplier Linkage Bar
+                              if (matchedProduct != null) ...[
+                                const SizedBox(height: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: (matchedProduct.stockQty <= matchedProduct.minStockAlert ? Colors.orange : Colors.teal).withOpacity(0.08),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: (matchedProduct.stockQty <= matchedProduct.minStockAlert ? Colors.orange : Colors.teal).withOpacity(0.3),
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 2,
+                                    crossAxisAlignment: WrapCrossAlignment.center,
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            matchedProduct.stockQty <= matchedProduct.minStockAlert
+                                                ? Icons.warning_amber_rounded
+                                                : Icons.check_circle_outline_rounded,
+                                            size: 13,
+                                            color: matchedProduct.stockQty <= matchedProduct.minStockAlert ? Colors.orange : Colors.teal,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'Stock: ${matchedProduct.stockQty.toStringAsFixed(0)} ${matchedProduct.unit}',
+                                            style: TextStyle(
+                                              fontSize: 10.5,
+                                              fontWeight: FontWeight.bold,
+                                              color: matchedProduct.stockQty <= matchedProduct.minStockAlert ? Colors.orange : Colors.teal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      if (matchedProduct.stockQty <= matchedProduct.minStockAlert)
+                                        const Text('• Reorder to Supplier',
+                                            style: TextStyle(fontSize: 10, color: Colors.deepOrange, fontWeight: FontWeight.w600)),
+                                      if (selectedSupplier != null)
+                                        Text(
+                                          '• Linked: ${selectedSupplier!.name}',
+                                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.teal),
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                if (orderItems.length > 1)
-                                  IconButton(
-                                    icon: const Icon(Icons.remove_circle_outline_rounded, color: Colors.red, size: 18),
-                                    tooltip: 'Remove Item',
-                                    onPressed: () => setState(() => orderItems.removeAt(idx)),
-                                  ),
+                              ],
+                            ],
+                          ),
+                        );
+                      }).toList(),
+
+                      const SizedBox(height: 12),
+
+                      // Financial Summary & Advance Deposit
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBgLight,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Total Order Price:', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                                Text(Formatters.formatCurrency(total),
+                                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
                               ],
                             ),
                             const SizedBox(height: 8),
+                            TextField(
+                              controller: advanceCtrl,
+                              keyboardType: TextInputType.number,
+                              onChanged: (_) => setState(() {}),
+                              decoration: const InputDecoration(
+                                labelText: 'Advance Deposit Paid (စရံငွေ)',
+                                prefixIcon: Icon(Icons.payments_outlined, size: 18, color: Colors.green),
+                                isDense: true,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: TextField(
-                                    controller: item['quantity'],
-                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                    onChanged: (_) => setState(() {}),
-                                    decoration: const InputDecoration(labelText: 'Quantity'),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  flex: 3,
-                                  child: DropdownButtonFormField<String>(
-                                    value: item['unit'] as String,
-                                    decoration: const InputDecoration(labelText: 'Unit'),
-                                    items: const [
-                                      DropdownMenuItem(value: 'piece', child: Text('Piece (ထည်)')),
-                                      DropdownMenuItem(value: 'yard', child: Text('Yard (ကိုက်)')),
-                                      DropdownMenuItem(value: 'meter', child: Text('Meter (မီတာ)')),
-                                      DropdownMenuItem(value: 'set', child: Text('Set (စုံ)')),
-                                    ],
-                                    onChanged: (val) => setState(() => item['unit'] = val ?? 'piece'),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  flex: 4,
-                                  child: TextField(
-                                    controller: item['unitPrice'],
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (_) => setState(() {}),
-                                    decoration: const InputDecoration(labelText: 'Unit Price'),
-                                  ),
+                                const Text('Remaining Due (ကျန်ငွေ):',
+                                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
+                                Text(
+                                  Formatters.formatCurrency(due),
+                                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.error),
                                 ),
                               ],
                             ),
-                            // Product Inventory & Supplier Linkage Bar
-                            if (matchedProduct != null) ...[
-                              const SizedBox(height: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: (matchedProduct.stockQty <= matchedProduct.minStockAlert ? Colors.orange : Colors.teal).withOpacity(0.08),
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                    color: (matchedProduct.stockQty <= matchedProduct.minStockAlert ? Colors.orange : Colors.teal).withOpacity(0.3),
-                                    width: 0.8,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          matchedProduct.stockQty <= matchedProduct.minStockAlert
-                                              ? Icons.warning_amber_rounded
-                                              : Icons.check_circle_outline_rounded,
-                                          size: 13,
-                                          color: matchedProduct.stockQty <= matchedProduct.minStockAlert ? Colors.orange : Colors.teal,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Stock: ${matchedProduct.stockQty.toStringAsFixed(0)} ${matchedProduct.unit} (Min: ${matchedProduct.minStockAlert.toStringAsFixed(0)})',
-                                          style: TextStyle(
-                                            fontSize: 10.5,
-                                            fontWeight: FontWeight.bold,
-                                            color: matchedProduct.stockQty <= matchedProduct.minStockAlert ? Colors.orange : Colors.teal,
-                                          ),
-                                        ),
-                                        if (matchedProduct.stockQty <= matchedProduct.minStockAlert) ...[
-                                          const SizedBox(width: 6),
-                                          const Text('• Reorder to Supplier (ကုန်သွင်းသူထံမှာယူရန်လို)', style: TextStyle(fontSize: 10, color: Colors.deepOrange, fontWeight: FontWeight.w600)),
-                                        ],
-                                      ],
-                                    ),
-                                    if (selectedSupplier != null)
-                                      Text(
-                                        'Linked: ${selectedSupplier!.name}',
-                                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.teal),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
                           ],
                         ),
-                      );
-                    }).toList(),
-
-                    const SizedBox(height: 12),
-
-                    // Financial Summary & Advance Deposit
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.cardBgLight,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.border),
                       ),
-                      child: Column(
+                      const SizedBox(height: 18),
+
+                      // Dialog Actions
+                      Row(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Total Order Price:', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-                              Text(Formatters.formatCurrency(total), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: advanceCtrl,
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (_) => setState(() {}),
-                                  decoration: const InputDecoration(
-                                    labelText: 'Advance Deposit Paid (စရံငွေ)',
-                                    prefixIcon: Icon(Icons.payments_outlined, size: 18, color: Colors.green),
-                                  ),
-                                ),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Get.back(),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: AppColors.border),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                               ),
-                            ],
+                              child: const Text('Cancel'),
+                            ),
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Remaining Balance Due (ကျန်ငွေ):', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.error)),
-                              Text(
-                                Formatters.formatCurrency(due),
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.error),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            flex: isMobile ? 1 : 2,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                final name = customerNameCtrl.text.trim();
+                                if (name.isEmpty) {
+                                  Get.snackbar('Input Error', 'Please enter customer name',
+                                      backgroundColor: Colors.amber.shade800, colorText: Colors.white);
+                                  return;
+                                }
+
+                                final appointmentIso = DateTime(
+                                  selectedDate.year,
+                                  selectedDate.month,
+                                  selectedDate.day,
+                                  selectedTime.hour,
+                                  selectedTime.minute,
+                                ).toIso8601String();
+
+                                List<CustomerOrderItemModel> builtItems = [];
+                                for (var i in orderItems) {
+                                  final itemName = (i['itemName'] as TextEditingController).text.trim();
+                                  if (itemName.isEmpty) continue;
+                                  final qty = double.tryParse((i['quantity'] as TextEditingController).text.trim()) ?? 1.0;
+                                  final price = double.tryParse((i['unitPrice'] as TextEditingController).text.trim()) ?? 0.0;
+
+                                  builtItems.add(CustomerOrderItemModel(
+                                    id: '',
+                                    customerOrderId: '',
+                                    productId: i['productId'] as String?,
+                                    supplierId: i['supplierId'] as String? ?? selectedSupplier?.id,
+                                    supplierName: i['supplierName'] as String? ?? selectedSupplier?.name,
+                                    itemName: itemName,
+                                    fabricType: (i['fabricType'] as TextEditingController).text.trim(),
+                                    color: (i['color'] as TextEditingController).text.trim(),
+                                    quantity: qty,
+                                    unit: i['unit'] as String,
+                                    unitPrice: price,
+                                    subtotal: qty * price,
+                                  ));
+                                }
+
+                                if (builtItems.isEmpty) {
+                                  Get.snackbar('Input Error', 'Please add at least one order item',
+                                      backgroundColor: Colors.amber.shade800, colorText: Colors.white);
+                                  return;
+                                }
+
+                                Get.back();
+                                await controller.saveOrder(
+                                  customerName: name,
+                                  customerId: selectedCustomer?.id,
+                                  customerPhone: customerPhoneCtrl.text.trim().isNotEmpty ? customerPhoneCtrl.text.trim() : null,
+                                  customerAddress: customerAddressCtrl.text.trim().isNotEmpty ? customerAddressCtrl.text.trim() : null,
+                                  orderSource: selectedSource,
+                                  leadAccount: leadAccountCtrl.text.trim(),
+                                  appointmentDate: appointmentIso,
+                                  appointmentType: selectedAppointmentType,
+                                  status: 'CONFIRMED',
+                                  totalAmount: total,
+                                  advanceAmount: advance,
+                                  notes: notesCtrl.text.trim(),
+                                  items: builtItems,
+                                );
+                              },
+                              icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
+                              label: Text(isMobile ? 'Save Order' : 'Save Customer Order'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
                               ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Dialog Actions
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Get.back(),
-                          child: const Text('Cancel'),
-                        ),
-                        const SizedBox(width: 10),
-                        SizedBox(
-                          width: 200,
-                          height: 42,
-                          child: ElevatedButton.icon(
-                            onPressed: () async {
-                            final name = customerNameCtrl.text.trim();
-                            if (name.isEmpty) {
-                              Get.snackbar('Input Error', 'Please enter customer name', backgroundColor: Colors.amber.shade800, colorText: Colors.white);
-                              return;
-                            }
-
-                            final appointmentIso = DateTime(
-                              selectedDate.year,
-                              selectedDate.month,
-                              selectedDate.day,
-                              selectedTime.hour,
-                              selectedTime.minute,
-                            ).toIso8601String();
-
-                            List<CustomerOrderItemModel> builtItems = [];
-                            for (var i in orderItems) {
-                              final itemName = (i['itemName'] as TextEditingController).text.trim();
-                              if (itemName.isEmpty) continue;
-                              final qty = double.tryParse((i['quantity'] as TextEditingController).text.trim()) ?? 1.0;
-                              final price = double.tryParse((i['unitPrice'] as TextEditingController).text.trim()) ?? 0.0;
-
-                              builtItems.add(CustomerOrderItemModel(
-                                id: '',
-                                customerOrderId: '',
-                                productId: i['productId'] as String?,
-                                supplierId: i['supplierId'] as String? ?? selectedSupplier?.id,
-                                supplierName: i['supplierName'] as String? ?? selectedSupplier?.name,
-                                itemName: itemName,
-                                fabricType: (i['fabricType'] as TextEditingController).text.trim(),
-                                color: (i['color'] as TextEditingController).text.trim(),
-                                quantity: qty,
-                                unit: i['unit'] as String,
-                                unitPrice: price,
-                                subtotal: qty * price,
-                              ));
-                            }
-
-                            if (builtItems.isEmpty) {
-                              Get.snackbar('Input Error', 'Please add at least one order item', backgroundColor: Colors.amber.shade800, colorText: Colors.white);
-                              return;
-                            }
-
-                            Get.back();
-                            await controller.saveOrder(
-                              customerName: name,
-                              customerId: selectedCustomer?.id,
-                              customerPhone: customerPhoneCtrl.text.trim().isNotEmpty ? customerPhoneCtrl.text.trim() : null,
-                              customerAddress: customerAddressCtrl.text.trim().isNotEmpty ? customerAddressCtrl.text.trim() : null,
-                              orderSource: selectedSource,
-                              leadAccount: leadAccountCtrl.text.trim(),
-                              appointmentDate: appointmentIso,
-                              appointmentType: selectedAppointmentType,
-                              status: 'CONFIRMED',
-                              totalAmount: total,
-                              advanceAmount: advance,
-                              notes: notesCtrl.text.trim(),
-                              items: builtItems,
-                            );
-                          },
-                          icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
-                          label: const Text('Save Customer Order'),
-                          style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
-                        ),
-                      ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -1528,6 +1814,7 @@ class CustomerOrderView extends StatelessWidget {
     Get.dialog(
       Dialog(
         backgroundColor: AppColors.cardBg,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: StatefulBuilder(
           builder: (context, setState) {
@@ -1545,19 +1832,25 @@ class CustomerOrderView extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 500),
               width: screenWidth < 540 ? screenWidth * 0.94 : 500,
               height: 520,
-              padding: EdgeInsets.all(screenWidth < 500 ? 14 : 20),
+              padding: EdgeInsets.all(screenWidth < 500 ? 12 : 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: const [
-                          Icon(Icons.inventory_2_rounded, color: AppColors.secondary, size: 22),
-                          SizedBox(width: 8),
-                          Text('Select Product (ကုန်ပစ္စည်းရွေးချယ်ရန်)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                        ],
+                      const Icon(Icons.inventory_2_rounded, color: AppColors.secondary, size: 22),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          screenWidth < 400 ? 'Select Product' : 'Select Product (ကုန်ပစ္စည်းရွေးချယ်ရန်)',
+                          style: TextStyle(
+                            fontSize: screenWidth < 400 ? 13.5 : 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textMuted),
@@ -1649,6 +1942,7 @@ class CustomerOrderView extends StatelessWidget {
     Get.dialog(
       Dialog(
         backgroundColor: AppColors.cardBg,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: StatefulBuilder(
           builder: (context, setState) {
@@ -1662,26 +1956,33 @@ class CustomerOrderView extends StatelessWidget {
             }).toList();
 
             final screenWidth = MediaQuery.of(context).size.width;
+            final isMobile = screenWidth < 500;
+
             return Container(
               constraints: const BoxConstraints(maxWidth: 520),
               width: screenWidth < 560 ? screenWidth * 0.94 : 520,
               height: 560,
-              padding: EdgeInsets.all(screenWidth < 500 ? 14 : 20),
+              padding: EdgeInsets.all(isMobile ? 12 : 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.playlist_add_check_rounded, color: AppColors.secondary, size: 22),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Select Multiple Products (${selectedProductIds.length} selected)',
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                      const Icon(Icons.playlist_add_check_rounded, color: AppColors.secondary, size: 22),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          isMobile
+                              ? 'Select Products (${selectedProductIds.length})'
+                              : 'Select Multiple Products (${selectedProductIds.length} selected)',
+                          style: TextStyle(
+                            fontSize: isMobile ? 13.5 : 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
                           ),
-                        ],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textMuted),
@@ -1760,50 +2061,93 @@ class CustomerOrderView extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Bottom Action Buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            if (selectedProductIds.length == filtered.length) {
-                              selectedProductIds.clear();
-                            } else {
-                              selectedProductIds.addAll(filtered.map((p) => p.id));
-                            }
-                          });
-                        },
-                        child: Text(
-                          selectedProductIds.length == filtered.length ? 'Deselect All' : 'Select All',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            width: 170,
-                            height: 38,
-                            child: ElevatedButton.icon(
-                              onPressed: selectedProductIds.isEmpty
-                                  ? null
-                                  : () {
-                                      final selectedList = controller.products
-                                          .where((p) => selectedProductIds.contains(p.id))
-                                          .toList();
-                                      Get.back();
-                                      onSelectedList(selectedList);
-                                    },
-                              icon: const Icon(Icons.add_shopping_cart_rounded, size: 16),
-                              label: Text('Add Selected (${selectedProductIds.length})'),
-                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
-                            ),
+                  if (screenWidth < 480) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              if (selectedProductIds.length == filtered.length) {
+                                selectedProductIds.clear();
+                              } else {
+                                selectedProductIds.addAll(filtered.map((p) => p.id));
+                              }
+                            });
+                          },
+                          child: Text(
+                            selectedProductIds.length == filtered.length ? 'Deselect All' : 'Select All',
+                            style: const TextStyle(fontSize: 12),
                           ),
-                        ],
+                        ),
+                        TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 40,
+                      child: ElevatedButton.icon(
+                        onPressed: selectedProductIds.isEmpty
+                            ? null
+                            : () {
+                                final selectedList = controller.products
+                                    .where((p) => selectedProductIds.contains(p.id))
+                                    .toList();
+                                Get.back();
+                                onSelectedList(selectedList);
+                              },
+                        icon: const Icon(Icons.add_shopping_cart_rounded, size: 16),
+                        label: Text('Add Selected (${selectedProductIds.length})'),
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
                       ),
-                    ],
-                  ),
+                    ),
+                  ] else ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              if (selectedProductIds.length == filtered.length) {
+                                selectedProductIds.clear();
+                              } else {
+                                selectedProductIds.addAll(filtered.map((p) => p.id));
+                              }
+                            });
+                          },
+                          child: Text(
+                            selectedProductIds.length == filtered.length ? 'Deselect All' : 'Select All',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+                            const SizedBox(width: 8),
+                            SizedBox(
+                              width: 170,
+                              height: 38,
+                              child: ElevatedButton.icon(
+                                onPressed: selectedProductIds.isEmpty
+                                    ? null
+                                    : () {
+                                        final selectedList = controller.products
+                                            .where((p) => selectedProductIds.contains(p.id))
+                                            .toList();
+                                        Get.back();
+                                        onSelectedList(selectedList);
+                                      },
+                                icon: const Icon(Icons.add_shopping_cart_rounded, size: 16),
+                                label: Text('Add Selected (${selectedProductIds.length})'),
+                                style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             );
@@ -1822,6 +2166,7 @@ class CustomerOrderView extends StatelessWidget {
     Get.dialog(
       Dialog(
         backgroundColor: AppColors.cardBg,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: StatefulBuilder(
           builder: (context, setState) {
@@ -1835,14 +2180,20 @@ class CustomerOrderView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: const [
-                          Icon(Icons.edit_calendar_rounded, color: Colors.blue, size: 22),
-                          SizedBox(width: 8),
-                          Text('ရက်ချိန်းပြောင်းမည် (Reschedule)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                        ],
+                      const Icon(Icons.edit_calendar_rounded, color: Colors.blue, size: 22),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          screenWidth < 400 ? 'ရက်ချိန်းပြောင်းမည်' : 'ရက်ချိန်းပြောင်းမည် (Reschedule)',
+                          style: TextStyle(
+                            fontSize: screenWidth < 400 ? 13.5 : 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textMuted),
@@ -1998,6 +2349,7 @@ class CustomerOrderView extends StatelessWidget {
     Get.dialog(
       Dialog(
         backgroundColor: AppColors.cardBg,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: StatefulBuilder(
           builder: (context, setState) {
@@ -2010,7 +2362,7 @@ class CustomerOrderView extends StatelessWidget {
             return Container(
               constraints: const BoxConstraints(maxWidth: 500),
               width: screenWidth < 540 ? screenWidth * 0.94 : 500,
-              padding: EdgeInsets.all(screenWidth < 500 ? 14 : 22),
+              padding: EdgeInsets.all(screenWidth < 500 ? 12 : 22),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -2018,14 +2370,20 @@ class CustomerOrderView extends StatelessWidget {
                   children: [
                     // Dialog Header
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: const [
-                            Icon(Icons.account_balance_wallet_rounded, color: Colors.green, size: 24),
-                            SizedBox(width: 8),
-                            Text('Order Payment & Settlement', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-                          ],
+                        const Icon(Icons.account_balance_wallet_rounded, color: Colors.green, size: 22),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Order Payment & Settlement',
+                            style: TextStyle(
+                              fontSize: screenWidth < 400 ? 14.5 : 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textMuted),
@@ -2199,28 +2557,30 @@ class CustomerOrderView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Row(
-                                          children: [
-                                            Icon(Icons.storefront_rounded, size: 15, color: Colors.tealAccent),
-                                            SizedBox(width: 5),
-                                            Text('In-House Delivery Income (ဆိုင်တွင်းပို့ခဝင်ငွေ)',
-                                                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Colors.tealAccent)),
-                                          ],
+                                        const Icon(Icons.storefront_rounded, size: 15, color: Colors.tealAccent),
+                                        const SizedBox(width: 5),
+                                        Expanded(
+                                          child: Text(
+                                            screenWidth < 400 ? 'In-House Delivery Income' : 'In-House Delivery Income (ဆိုင်တွင်းပို့ခဝင်ငွေ)',
+                                            style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold, color: Colors.tealAccent),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
-                                        if (selectedDeliveryService!.isCommissionBased)
+                                        if (selectedDeliveryService!.isCommissionBased) ...[
+                                          const SizedBox(width: 4),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                                             decoration: BoxDecoration(
                                               color: Colors.teal.shade800.withOpacity(0.4),
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
-                                              'Commission: ${selectedDeliveryService!.commissionVal.toStringAsFixed(0)}${selectedDeliveryService!.commissionType == 'PERCENT' ? '%' : ' Ks'}',
-                                              style: const TextStyle(fontSize: 10, color: Colors.tealAccent),
+                                              '${selectedDeliveryService!.commissionVal.toStringAsFixed(0)}${selectedDeliveryService!.commissionType == 'PERCENT' ? '%' : ' Ks'} comm.',
+                                              style: const TextStyle(fontSize: 9.5, color: Colors.tealAccent),
                                             ),
                                           ),
+                                        ],
                                       ],
                                     ),
                                     const SizedBox(height: 6),
@@ -2241,15 +2601,16 @@ class CustomerOrderView extends StatelessWidget {
 
                             // COD Switch for Customer Order
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Row(
-                                  children: [
-                                    Icon(Icons.handshake_outlined, size: 18, color: Colors.amber),
-                                    SizedBox(width: 6),
-                                    Text('Cash on Delivery (COD / ပစ္စည်းရောက်ငွေချေ)',
-                                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber)),
-                                  ],
+                                const Icon(Icons.handshake_outlined, size: 18, color: Colors.amber),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    screenWidth < 420 ? 'Cash on Delivery (COD)' : 'Cash on Delivery (COD / ပစ္စည်းရောက်ငွေချေ)',
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.amber),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                                 Switch(
                                   value: isCod,
@@ -2379,13 +2740,16 @@ class CustomerOrderView extends StatelessWidget {
                               isCod ? Icons.local_shipping_rounded : Icons.check_circle_rounded,
                               size: 18,
                             ),
-                            label: Text(
-                              isCod
-                                  ? 'Dispatch with COD (${Formatters.formatCurrency(codAmount)})'
-                                  : (isFullSettlement
-                                      ? 'Settle Full & Complete Order'
-                                      : 'Record Partial Payment'),
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            label: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                isCod
+                                    ? 'Dispatch with COD (${Formatters.formatCurrency(codAmount)})'
+                                    : (isFullSettlement
+                                        ? 'Settle Full & Complete Order'
+                                        : 'Record Partial Payment'),
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ),
                         ),
