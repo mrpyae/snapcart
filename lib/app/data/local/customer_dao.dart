@@ -75,6 +75,20 @@ class CustomerDao {
     return res.map((e) => CustomerModel.fromJson(e)).toList();
   }
 
+  Future<CustomerModel?> getCustomerById(String id) async {
+    final db = await dbHelper.database;
+    final res = await db.query(
+      'customers',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    if (res.isNotEmpty) {
+      return CustomerModel.fromJson(res.first);
+    }
+    return null;
+  }
+
   Future<void> adjustCustomerDebt(String customerId, double debtChange) async {
     final db = await dbHelper.database;
     await db.rawUpdate(

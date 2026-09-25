@@ -39,6 +39,10 @@ class AppController extends GetxController {
   bool get isOnlineOnly => operationMode.value == OperationMode.onlineOnly;
   bool get isHybrid => operationMode.value == OperationMode.hybrid;
   bool get isOfflineOnly => operationMode.value == OperationMode.offlineOnly;
+  bool get isOwner {
+    final role = currentAccount.value?.roleName.toLowerCase();
+    return role == 'owner' || role == 'admin';
+  }
 
   StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 

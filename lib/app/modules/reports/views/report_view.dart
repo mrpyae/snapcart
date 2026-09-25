@@ -5,6 +5,7 @@ import '../../../data/models/sale_order_model.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/formatters.dart';
 import '../../../utils/responsive.dart';
+import '../../../utils/voucher_owner_dialogs.dart';
 import '../controllers/report_controller.dart';
 
 class ReportView extends StatefulWidget {
@@ -582,23 +583,64 @@ class _ReportViewState extends State<ReportView> {
                 ),
               ),
               const SizedBox(width: 8),
-              InkWell(
-                onTap: () => _showVoucherDetailModal(context, voucher),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.secondary.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(6),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: () => _showVoucherDetailModal(context, voucher),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(Icons.visibility_rounded, size: 13, color: AppColors.secondary),
+                          SizedBox(width: 4),
+                          Text('Receipt', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.secondary)),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.visibility_rounded, size: 13, color: AppColors.secondary),
-                      SizedBox(width: 4),
-                      Text('Receipt', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.secondary)),
+                  const SizedBox(width: 4),
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert_rounded, size: 18, color: AppColors.textMuted),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    tooltip: 'Owner Actions',
+                    onSelected: (val) {
+                      if (val == 'edit') {
+                        VoucherOwnerDialogs.openEditDialog(context, voucher, onUpdated: () => controller.loadSalesVouchers());
+                      } else if (val == 'delete') {
+                        VoucherOwnerDialogs.confirmAndDelete(context, voucher, onDeleted: () => controller.loadSalesVouchers());
+                      }
+                    },
+                    itemBuilder: (ctx) => [
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_note_rounded, size: 16, color: Colors.blueAccent),
+                            SizedBox(width: 8),
+                            Text('Edit Voucher (Owner)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_forever_rounded, size: 16, color: AppColors.error),
+                            SizedBox(width: 8),
+                            Text('Void / Delete (Owner)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.error)),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ),
+                ],
               ),
             ],
           ),
@@ -878,7 +920,53 @@ class _ReportViewState extends State<ReportView> {
                   Text(Formatters.formatCurrency(voucher.dueAmount), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.error)),
                 ]),
               ],
-              const SizedBox(height: 20),
+              const SizedBox(height: 14),
+
+              // Owner Access Actions Panel
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.amber.withOpacity(0.3), width: 0.8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.admin_panel_settings_rounded, size: 16, color: Colors.amber),
+                        SizedBox(width: 6),
+                        Text('Owner Access', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.amber)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.of(ctx, rootNavigator: true).pop();
+                            VoucherOwnerDialogs.openEditDialog(context, voucher, onUpdated: () => controller.loadSalesVouchers());
+                          },
+                          icon: const Icon(Icons.edit_note_rounded, size: 15, color: Colors.blueAccent),
+                          label: const Text('Edit', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                          style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                        ),
+                        const SizedBox(width: 4),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.of(ctx, rootNavigator: true).pop();
+                            VoucherOwnerDialogs.confirmAndDelete(context, voucher, onDeleted: () => controller.loadSalesVouchers());
+                          },
+                          icon: const Icon(Icons.delete_forever_rounded, size: 15, color: AppColors.error),
+                          label: const Text('Void / Delete', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.error)),
+                          style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
               SizedBox(
                 width: double.infinity,
                 height: 48,

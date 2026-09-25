@@ -511,5 +511,126 @@ class POSController extends GetxController {
       businessId: bizId,
     );
   }
+
+  /// Void/delete an existing voucher (restores product stock, reverses customer credit debt, reverses courier COD)
+  Future<bool> deleteVoucher(String orderId) async {
+    try {
+      await saleDao.deleteSaleOrder(orderId);
+      await loadTodayVouchers();
+      await loadProducts();
+      await loadCustomers();
+      Get.snackbar(
+        'Voucher Voided',
+        'Voucher was successfully deleted and stock was restored.',
+        backgroundColor: Colors.green.shade800,
+        colorText: Colors.white,
+      );
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Could not delete voucher: $e',
+        backgroundColor: Colors.red.shade800,
+        colorText: Colors.white,
+      );
+      return false;
+    }
+  }
+
+  /// Recall an existing voucher into the POS Cart for editing and void the original
+  Future<bool> recallVoucherToCart(SaleOrderModel order) async {
+    try {
+      // 1. Fetch full items if not already populated
+      SaleOrderModel? fullOrder = order;
+      if (order.items.isEmpty) {
+        fullOrder = await saleDao.getSaleOrderById(order.id);
+      }
+      if (fullOrder == null) return false;
+
+      // 2. Void the original voucher from database so stock is returned
+      await saleDao.deleteSaleOrder(order.id);
+      await loadTodayVouchers();
+      await loadProducts();
+      await loadCustomers();
+
+      // 3. Clear existing cart and populate with voucher's items
+      cart.clear();
+      for (var item in fullOrder.items) {
+        final matchedProduct = products.firstWhereOrNull((p) => p.id == item.productId) ??
+            ProductModel(
+              id: item.productId,
+              name: item.productName,
+              retailPrice: item.price,
+              unit: item.unit,
+              categoryName: 'General',
+              stockQty: 999,
+            );
+
+        cart.add(CartItem(
+          product: matchedProduct,
+          quantity: item.quantity,
+          price: item.price,
+          discount: item.discount,
+          isPriceOverridden: (item.price != matchedProduct.retailPrice),
+        ));
+      }
+
+      // 4. Restore customer, discount, delivery fee, payment method
+      if (fullOrder.customerId != null && fullOrder.customerId!.isNotEmpty) {
+        selectedCustomer.value = customers.firstWhereOrNull((c) => c.id == fullOrder!.customerId);
+      } else {
+        selectedCustomer.value = null;
+      }
+      voucherDiscount.value = fullOrder.discountAmount;
+      deliveryFee.value = fullOrder.deliveryFee;
+      selectedPaymentMethod.value = fullOrder.paymentMethod;
+
+      Get.snackbar(
+        'Voucher Recalled to Cart',
+        'Voucher ${fullOrder.voucherNo} items loaded into POS cart. Original record removed.',
+        backgroundColor: Colors.teal.shade800,
+        colorText: Colors.white,
+      );
+      return true;
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to recall voucher: $e', backgroundColor: Colors.red.shade800, colorText: Colors.white);
+      return false;
+    }
+  }
+
+  /// Update voucher header (payment method, paid amount, due amount, notes, customer)
+  Future<bool> updateVoucherHeader({
+    required String orderId,
+    required String paymentMethod,
+    required double paidAmount,
+    required double dueAmount,
+    required String saleStatus,
+    String? customerId,
+    String? notes,
+  }) async {
+    try {
+      await saleDao.updateSaleOrderHeader(
+        orderId: orderId,
+        paymentMethod: paymentMethod,
+        paidAmount: paidAmount,
+        dueAmount: dueAmount,
+        saleStatus: saleStatus,
+        customerId: customerId,
+        notes: notes,
+      );
+      await loadTodayVouchers();
+      await loadCustomers();
+      Get.snackbar(
+        'Voucher Updated',
+        'Voucher changes saved successfully.',
+        backgroundColor: Colors.green.shade800,
+        colorText: Colors.white,
+      );
+      return true;
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to update voucher: $e', backgroundColor: Colors.red.shade800, colorText: Colors.white);
+      return false;
+    }
+  }
 }
 

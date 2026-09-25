@@ -48,6 +48,144 @@ class SaleDao {
     });
   }
 
+  /// Get a single sale order with its items by ID
+  Future<SaleOrderModel?> getSaleOrderById(String orderId) async {
+    final db = await dbHelper.database;
+    final res = await db.query(
+      'sales_orders',
+      where: 'id = ?',
+      whereArgs: [orderId],
+      limit: 1,
+    );
+    if (res.isEmpty) return null;
+    final itemsRes = await db.query(
+      'sales_order_items',
+      where: 'sale_order_id = ?',
+      whereArgs: [orderId],
+    );
+    final items = itemsRes.map((i) => SaleOrderItemModel.fromJson(i)).toList();
+    return SaleOrderModel.fromJson(res.first, items: items);
+  }
+
+  /// Void/Delete a sale order: restores product stock, reverses customer credit debt, and reverses courier COD
+  Future<void> deleteSaleOrder(String orderId) async {
+    final db = await dbHelper.database;
+    await db.transaction((txn) async {
+      // 1. Fetch order header
+      final orderRows = await txn.query(
+        'sales_orders',
+        where: 'id = ?',
+        whereArgs: [orderId],
+        limit: 1,
+      );
+      if (orderRows.isEmpty) return;
+      final orderRow = orderRows.first;
+
+      // 2. Fetch order items
+      final itemRows = await txn.query(
+        'sales_order_items',
+        where: 'sale_order_id = ?',
+        whereArgs: [orderId],
+      );
+
+      // 3. Reverse product stock (add item quantities back to inventory)
+      for (var item in itemRows) {
+        final double qty = double.tryParse(item['quantity']?.toString() ?? '0') ?? 0.0;
+        final productId = item['product_id']?.toString();
+        if (productId != null && qty > 0) {
+          await txn.rawUpdate(
+            'UPDATE products SET stock_qty = stock_qty + ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            [qty, productId],
+          );
+        }
+      }
+
+      // 4. Reverse customer debt if credit sale was involved
+      final customerId = orderRow['customer_id']?.toString();
+      final double dueAmount = double.tryParse(orderRow['due_amount']?.toString() ?? '0') ?? 0.0;
+      if (customerId != null && customerId.isNotEmpty && dueAmount > 0) {
+        await txn.rawUpdate(
+          'UPDATE customers SET current_debt = MAX(0.0, current_debt - ?), sync_status = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+          [dueAmount, customerId],
+        );
+      }
+
+      // 5. Reverse delivery service COD receivable if COD delivery was involved
+      final int isCod = int.tryParse(orderRow['is_cod']?.toString() ?? '0') ?? 0;
+      final deliveryServiceId = orderRow['delivery_service_id']?.toString();
+      final double codAmount = double.tryParse(orderRow['cod_amount']?.toString() ?? '0') ?? 0.0;
+      if (isCod == 1 && deliveryServiceId != null && deliveryServiceId.isNotEmpty && codAmount > 0) {
+        await txn.rawUpdate(
+          'UPDATE delivery_services SET receivable_balance = MAX(0.0, receivable_balance - ?), sync_status = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+          [codAmount, deliveryServiceId],
+        );
+      }
+
+      // 6. Delete order items and header
+      await txn.delete(
+        'sales_order_items',
+        where: 'sale_order_id = ?',
+        whereArgs: [orderId],
+      );
+      await txn.delete(
+        'sales_orders',
+        where: 'id = ?',
+        whereArgs: [orderId],
+      );
+    });
+  }
+
+  /// Update an existing sale order header (payment method, customer, paid amount, due amount, notes)
+  Future<void> updateSaleOrderHeader({
+    required String orderId,
+    required String paymentMethod,
+    required double paidAmount,
+    required double dueAmount,
+    required String saleStatus,
+    String? customerId,
+    String? notes,
+  }) async {
+    final db = await dbHelper.database;
+    await db.transaction((txn) async {
+      final existingRows = await txn.query('sales_orders', where: 'id = ?', whereArgs: [orderId], limit: 1);
+      if (existingRows.isEmpty) return;
+      final existing = existingRows.first;
+
+      final oldCustomerId = existing['customer_id']?.toString();
+      final double oldDue = double.tryParse(existing['due_amount']?.toString() ?? '0') ?? 0.0;
+
+      // Reconcile customer debt
+      if (oldCustomerId != null && oldCustomerId.isNotEmpty && oldDue > 0) {
+        await txn.rawUpdate(
+          'UPDATE customers SET current_debt = MAX(0.0, current_debt - ?), sync_status = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+          [oldDue, oldCustomerId],
+        );
+      }
+      if (customerId != null && customerId.isNotEmpty && dueAmount > 0) {
+        await txn.rawUpdate(
+          'UPDATE customers SET current_debt = current_debt + ?, sync_status = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+          [dueAmount, customerId],
+        );
+      }
+
+      await txn.update(
+        'sales_orders',
+        {
+          'payment_method': paymentMethod,
+          'paid_amount': paidAmount,
+          'due_amount': dueAmount,
+          'sale_status': saleStatus,
+          'customer_id': customerId,
+          'notes': notes,
+          'sync_status': 0,
+          'updated_at': DateTime.now().toIso8601String(),
+        },
+        where: 'id = ?',
+        whereArgs: [orderId],
+      );
+    });
+  }
+
   Future<List<SaleOrderModel>> getDailySales({required String date, String businessId = 'default_biz'}) async {
     final db = await dbHelper.database;
     final res = await db.query(

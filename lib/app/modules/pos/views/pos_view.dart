@@ -9,6 +9,7 @@ import '../../../utils/product_image_widget.dart';
 import '../controllers/pos_controller.dart';
 import 'receipt_dialog.dart';
 import 'item_price_history_dialog.dart';
+import '../../../utils/voucher_owner_dialogs.dart';
 
 class POSView extends StatelessWidget {
   const POSView({Key? key}) : super(key: key);
@@ -1803,11 +1804,51 @@ class POSView extends StatelessWidget {
                                   ),
                               ],
                             ),
-                            const SizedBox(width: 10),
-                            IconButton(
-                              icon: const Icon(Icons.print_rounded, size: 18, color: AppColors.primaryLight),
-                              tooltip: 'Reprint / Preview Receipt',
-                              onPressed: () => Get.dialog(ReceiptDialog(order: order)),
+                            const SizedBox(width: 6),
+                            PopupMenuButton<String>(
+                              icon: const Icon(Icons.more_vert_rounded, size: 20, color: AppColors.textMuted),
+                              tooltip: 'Voucher Options',
+                              onSelected: (val) {
+                                if (val == 'reprint') {
+                                  Get.dialog(ReceiptDialog(order: order));
+                                } else if (val == 'edit') {
+                                  VoucherOwnerDialogs.openEditDialog(context, order);
+                                } else if (val == 'delete') {
+                                  VoucherOwnerDialogs.confirmAndDelete(context, order);
+                                }
+                              },
+                              itemBuilder: (ctx) => [
+                                const PopupMenuItem(
+                                  value: 'reprint',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.print_rounded, size: 16, color: AppColors.primaryLight),
+                                      SizedBox(width: 8),
+                                      Text('Print Slip / Preview', style: TextStyle(fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.edit_note_rounded, size: 16, color: Colors.blueAccent),
+                                      SizedBox(width: 8),
+                                      Text('Edit Voucher (Owner)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete_forever_rounded, size: 16, color: AppColors.error),
+                                      SizedBox(width: 8),
+                                      Text('Void / Delete (Owner)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.error)),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

@@ -9,6 +9,7 @@ import '../../../utils/bluetooth_printer_service.dart';
 import '../../../utils/receipt_printer_helper.dart';
 import '../../../utils/voucher_pdf_service.dart';
 import '../../settings/views/bluetooth_printer_dialog.dart';
+import '../../../utils/voucher_owner_dialogs.dart';
 
 class ReceiptDialog extends StatelessWidget {
   final SaleOrderModel order;
@@ -173,7 +174,56 @@ class ReceiptDialog extends StatelessWidget {
                 child: ReceiptPrinterHelper.buildReceiptWidget(order),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
+
+            // Owner Access: Edit / Void Voucher
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.amber.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.amber.withOpacity(0.3), width: 0.8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.admin_panel_settings_rounded, size: 16, color: Colors.amber),
+                      SizedBox(width: 6),
+                      Text(
+                        'Owner Access',
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.amber),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      TextButton.icon(
+                        onPressed: () {
+                          Get.back();
+                          VoucherOwnerDialogs.openEditDialog(context, order);
+                        },
+                        icon: const Icon(Icons.edit_note_rounded, size: 15, color: Colors.blueAccent),
+                        label: const Text('Edit Voucher', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                        style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                      ),
+                      const SizedBox(width: 4),
+                      TextButton.icon(
+                        onPressed: () {
+                          Get.back();
+                          VoucherOwnerDialogs.confirmAndDelete(context, order);
+                        },
+                        icon: const Icon(Icons.delete_forever_rounded, size: 15, color: AppColors.error),
+                        label: const Text('Void / Delete', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.error)),
+                        style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
 
             // Action Buttons Row
             Wrap(

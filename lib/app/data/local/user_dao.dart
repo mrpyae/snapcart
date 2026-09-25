@@ -157,4 +157,19 @@ class UserDao {
     }
     return null;
   }
+
+  /// Verify if the given passcode matches any active Owner or Admin account
+  Future<bool> verifyOwnerPasscode(String passcode) async {
+    final trimmed = passcode.trim();
+    if (trimmed.isEmpty) return false;
+    final db = await dbHelper.database;
+    final res = await db.rawQuery('''
+      SELECT id FROM user_accounts 
+      WHERE (LOWER(role_name) = 'owner' OR LOWER(role_name) = 'admin') 
+        AND passcode = ? 
+        AND is_active = 1
+      LIMIT 1
+    ''', [trimmed]);
+    return res.isNotEmpty;
+  }
 }
