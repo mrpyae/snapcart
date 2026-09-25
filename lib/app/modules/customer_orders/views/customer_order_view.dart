@@ -959,7 +959,7 @@ class CustomerOrderView extends StatelessWidget {
 
     DateTime selectedDate = DateTime.now().add(const Duration(days: 2));
     TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
-    String selectedAppointmentType = 'DELIVERY_TARGET';
+    String selectedAppointmentType = 'LOOM_WEAVING';
 
     final List<Map<String, dynamic>> orderItems = [
       {
@@ -2161,7 +2161,8 @@ class CustomerOrderView extends StatelessWidget {
   void _showRescheduleDialog(BuildContext context, CustomerOrderModel order, CustomerOrderController controller) {
     DateTime selectedDate = order.appointmentDate != null ? DateTime.parse(order.appointmentDate!) : DateTime.now().add(const Duration(days: 1));
     TimeOfDay selectedTime = TimeOfDay.fromDateTime(selectedDate);
-    String selectedType = order.appointmentType;
+    const validTypes = ['LOOM_WEAVING', 'FABRIC_DELIVERY_IN', 'PACKING', 'DELIVERY'];
+    String selectedType = validTypes.contains(order.appointmentType) ? order.appointmentType : 'LOOM_WEAVING';
 
     Get.dialog(
       Dialog(
